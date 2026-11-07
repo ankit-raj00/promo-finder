@@ -313,5 +313,8 @@ with tab3:
 with tab4:
     if QUALITY.exists():
         st.markdown(QUALITY.read_text(encoding="utf-8"))
+    elif IS_DEMO:
+        st.info("The quality report covers Kuku's 50 episodes, so it isn't shown for the 3-episode sample show. "
+                "`quality_report.py` builds one from any full run.")
     else:
         st.info("Run `python quality_report.py` first.")
