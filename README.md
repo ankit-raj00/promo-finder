@@ -63,6 +63,8 @@ The rule behind the design: **AI makes the judgment calls, and code does anythin
 | 9. Montages | AI + code | `cross_episode.py` | Joins moments across episodes, and code drops invalid ones |
 | 10. Decide | Person | `editor_sheet.py` | An editor approves the picks from the exported sheet and cuts the footage |
 
+`run_show.py` runs steps 1-9 on a whole show. The site's **Try it** tab runs steps 1-7, so it gives a ranked list without the top 10 order or montages.
+
 Why some of these choices were made:
 
 - **Line IDs instead of text (step 3).** The model sees `e12 [00:17.00-00:19.00] JULIAN (O.S.) (Cold): Put it down.` and answers `e12`. Code then looks up the time and the words, so a quote or timestamp can't be invented. An early version let the model write quotes, and a full check found 12 of 138 merged or reworded.

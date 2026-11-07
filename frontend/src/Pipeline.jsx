@@ -158,7 +158,7 @@ export default function Pipeline() {
         </table>
       </div>
       <p className="muted small">
-        Quality in the judge's final round was scored by an AI, not a person, so that evidence is weaker. New runs use Flash Low for the critic too, because the winner hit long rate limits. This site's live runs use the free Gemini Flash Lite for speed, a model outside this comparison.
+        Quality in the judge's final round, and the test labels for the critic and spoiler check, came from Claude, not a person, so that evidence is weaker. New runs use Flash Low for the critic too, because the winner hit long rate limits. This site's live runs use the free Gemini Flash Lite for speed, a model outside this comparison.
       </p>
 
       <h2>Scale and cost</h2>

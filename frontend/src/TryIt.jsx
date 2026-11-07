@@ -103,7 +103,7 @@ export default function TryIt({ config }) {
       <div className="page-head">
         <div>
           <h1>Try it</h1>
-          <p className="lede">Choose an input and press Find promos. No login needed.</p>
+          <p className="lede">Choose an input and press Find promos. No login needed. This page runs steps 1-7 of the pipeline. The top 10 order and montages come from the full-show command, <code>run_show.py</code>.</p>
         </div>
       </div>
 
