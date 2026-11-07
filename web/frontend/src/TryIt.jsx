@@ -173,8 +173,9 @@ export default function TryIt({ config }) {
             <label className="field">Judge model<input value={own.model} onChange={(e) => setOwn({ ...own, model: e.target.value })} placeholder="Model ID" /></label>
             <label className="field">Critic model<input value={own.critic_model} onChange={(e) => setOwn({ ...own, critic_model: e.target.value })} placeholder="Same as judge if empty" /></label>
           </div>
-          {ownKey && !own.model.trim() && <p className="error-text">Enter a judge model ID to use your own key.</p>}
         </details>
+
+        {ownKey && !own.model.trim() && <p className="error-text">Find promos is off because you entered an API key with no model. Enter a Judge model under Use your own model, or clear the key.</p>}
 
         {overLimit && <p className="error-text">The free key runs up to {config.max_episodes_shared} episodes at a time. Remove some files, or add your own key.</p>}
         <button className="btn primary run" disabled={busy || !scripts.length || overLimit || (ownKey && !own.model.trim())} onClick={runIt}>
