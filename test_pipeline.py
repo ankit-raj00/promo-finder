@@ -160,56 +160,73 @@ def test_key_typed_in_the_app_reaches_anthropic_when_base_url_is_empty():
         llm_client._session.reset(token)
 
 
-def _app(password=""):
-    from streamlit.testing.v1 import AppTest
+def _site(demo_only=True):
+    from fastapi.testclient import TestClient
 
-    os.environ["PROMO_FINDER_VIEW_PASSWORD"] = password
-    try:
-        return AppTest.from_file(str(Path(__file__).with_name("app.py")), default_timeout=60).run()
-    finally:
-        del os.environ["PROMO_FINDER_VIEW_PASSWORD"]
+    import api
+
+    for name in ("PROMO_FINDER_API_KEY", "ANTHROPIC_API_KEY"):
+        os.environ.pop(name, None)
+    os.environ.pop("PROMO_FINDER_DEMO_ONLY", None)
+    if demo_only:
+        os.environ["PROMO_FINDER_DEMO_ONLY"] = "1"
+    return TestClient(api.app)
 
 
-def test_app_opens_with_no_key():
-    assert not _app().exception
+def _demo_script(n=1):
+    f = next(SAMPLES.glob(f"episode-{n:03d}-*.txt"))
+    return {"name": f.name, "text": f.read_text(encoding="utf-8")}
 
 
-def test_password_keeps_real_results_hidden():
-    # A hosted copy must open on the sample show until the password is entered.
+def test_public_copy_never_serves_real_results():
+    site = _site(demo_only=True)
+    out = site.get("/api/results").json()
     demo = json.loads((Path(__file__).parent / "demo/outputs/ranked_promos.json").read_text(encoding="utf-8"))
-    app = _app("a-password")
-    assert not app.exception
-    assert any(s.value.startswith(f"{demo['total_promos']} validated promos") for s in app.subheader)
+    assert out["is_sample"] and len(out["ranked"]) == demo["total_promos"]
+    assert site.get("/api/config").json()["has_real_results"] is False
 
 
-def test_sample_shows_saved_ai_results_without_a_key():
-    app = _app()
-    next(b for b in app.button if b.label == "Find promos").click()
-    app = app.run()
-    assert not app.exception
-    assert any("saved results from a real AI run): 5 promos" in s.value for s in app.success)
+def test_samples_include_saved_ai_results():
+    samples = _site().get("/api/samples").json()
+    assert len(samples) == 3 and sum(len(s["saved"]) for s in samples) == 5
+    assert all(s["text"] for s in samples)
 
 
-def test_pasted_script_runs_without_a_key():
-    app = _app()
-    next(r for r in app.radio if r.label == "Choose an input").set_value("Paste script text")
-    app = app.run()
-    next(a for a in app.text_area if a.label.startswith("Paste")).set_value(next(SAMPLES.glob("episode-001-*.txt")).read_text(encoding="utf-8"))
-    app = app.run()
-    next(b for b in app.button if b.label == "Find promos").click()
-    app = app.run()
-    assert not app.exception
-    assert any("keyword-only fallback" in s.value for s in app.success)
+def test_script_runs_without_a_key_as_labelled_keyword_picks():
+    out = _site().post("/api/judge", json=_demo_script()).json()
+    assert out["live"] is False and out["promos"]
+    assert "Unverified" in out["promos"][0]["why_it_works"] and "rank_score" not in out["promos"][0]
 
 
-def test_pasting_junk_gives_a_clear_error():
-    app = _app()
-    next(r for r in app.radio if r.label == "Choose an input").set_value("Paste script text")
-    app = app.run()
-    next(a for a in app.text_area if a.label.startswith("Paste")).set_value("this is not a screenplay")
-    app = app.run()
-    assert not app.exception
-    assert any("no scenes found" in e.value for e in app.error)
+def test_parse_reads_a_script_and_rejects_junk_clearly():
+    site = _site()
+    assert site.post("/api/parse", json=_demo_script()).json()["scenes"] >= 1
+    bad = site.post("/api/parse", json={"name": "junk.txt", "text": "this is not a screenplay"})
+    assert bad.status_code == 422 and "no scenes found" in bad.json()["detail"]
+
+
+def test_a_failed_model_call_gives_a_plain_message_and_hides_the_key():
+    site = _site()
+    body = {**_demo_script(), "base_url": "http://127.0.0.1:9/v1", "api_key": "secret-key", "model": "m"}
+    out = site.post("/api/judge", json=body).json()
+    assert out["live"] is True and out["error"] and "secret-key" not in json.dumps(out)
+
+
+def test_sheet_downloads_as_csv():
+    row = {"segments": [{"start": "00:01.00", "end": "00:31.00"}], "total_length_s": 30.0, "hook_quote": "Who?"}
+    r = _site().post("/api/sheet", json={"rows": [row]})
+    assert r.status_code == 200 and r.headers["content-type"].startswith("text/csv") and "Who?" in r.text
+
+
+def test_shared_key_limit_is_per_visitor_and_resets():
+    import api
+
+    api._recent.clear()
+    for _ in range(api.SHARED_KEY_EPISODES_PER_HOUR):
+        assert api.within_shared_limit("a", now=1000.0)
+    assert not api.within_shared_limit("a", now=1000.0)
+    assert api.within_shared_limit("b", now=1000.0)
+    assert api.within_shared_limit("a", now=1000.0 + 3601)
 
 
 def test_visitor_errors_are_plain_and_never_show_the_key():

@@ -6,19 +6,20 @@ Built for Problem 1 of Kuku's AI Generalist assignment.
 
 **Live app: https://13-206-20-22.sslip.io**
 
-The app shows a sample show I wrote, so anyone can try it. Kuku's scripts are confidential, so neither they nor the results that quote them are in this repo or the hosted app. Those results are in the raw outputs linked on the submission form.
+The app shows a sample show I wrote, so anyone can try it. Kuku's scripts are confidential, so neither they nor the results that quote them are in this repo or on the hosted site. Those results are in the raw outputs linked on the submission form.
 
-To browse the 50-episode results in the app, unzip the raw outputs so the `outputs` folder sits next to `app.py`, then run the app on your computer.
+To browse the 50-episode results in the app, unzip the raw outputs so the `outputs` folder sits next to `api.py`, then run the app on your computer.
 
 ## Try it
 
 1. Open the live app and look at **Post first**: the top 10 clips, each with a reason for its slot.
 2. Download the editor sheet. It's a CSV with every timestamp, hook and cliffhanger, plus empty columns for an editor's decision and notes.
-3. Open **Run on new episodes**, pick a sample episode, paste a script, or upload `.txt` files, then press **Find promos**.
+3. Open **Try it**, pick a sample episode, paste a script, or upload `.txt` files, then press **Find promos**.
+4. Open **How it works** for a flowchart of the pipeline, and **Quality** for where it fails.
 
 No key is needed on the live app. Sample episodes show saved results from a real AI run, and pasted or uploaded scripts get live AI judgment through a free Gemini key (`gemini-flash-lite-latest`). It can run out for a while, and that model wasn't part of the comparison in `MODEL_SELECTION.md`, so its picks can differ from the submitted results. Don't paste confidential scripts, because they go to Google.
 
-Running it yourself with no key, pasted or uploaded scripts get keyword-only picks, labelled as such. To use your own model, enter these in the sidebar. They're used for your session only and are never saved.
+Running it yourself with no key, pasted or uploaded scripts get keyword-only picks, labelled as such. To use your own model, enter these under **Use your own model** on the Try it tab. They're used for your session only and are never saved.
 
 | To use | Base URL | Models |
 |---|---|---|
@@ -32,8 +33,8 @@ Needs Python 3.10 or newer.
 
 ```bash
 pip install -r requirements.txt
-python test_pipeline.py     # 15 offline tests, no key needed
-streamlit run app.py
+python test_pipeline.py     # offline tests, no key needed
+python -m uvicorn api:app --port 8000     # then open http://localhost:8000
 ```
 
 To run a whole show from the command line:
@@ -79,11 +80,11 @@ The tool reads text, so it can't judge acting, music or pacing. It can miss a gr
 
 ## Hosting
 
-The live app runs on one small AWS server, using `deploy/promo-finder.service` for the app and `deploy/Caddyfile` for HTTPS. Its free Gemini key is in a root-only file on the server, never in this repo, and the app limits it to 5 episodes per run.
+The live app runs on one small AWS server, using `deploy/promo-finder.service` for the app and `deploy/Caddyfile` for HTTPS. Its free Gemini key is in a root-only file on the server, never in this repo, and the site limits it to 5 episodes per run and 30 per visitor per hour.
 
-It also runs on [Streamlit Community Cloud](https://streamlit.io/cloud): point it at this repo with `app.py` as the main file.
+It sets `PROMO_FINDER_DEMO_ONLY=1`, so a public copy serves only the sample show, even if `outputs/` exists.
 
-If a hosted copy ever holds confidential results in `outputs/`, set `PROMO_FINDER_VIEW_PASSWORD` and the app keeps them behind a password.
+The site is React (`frontend/`) on a small FastAPI backend (`api.py`). The built site is committed in `frontend/dist`, so running it needs only Python. To change it, run `npm install` and `npm run build` in `frontend/`.
 
 ## How the submitted results were produced
 

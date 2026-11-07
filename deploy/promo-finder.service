@@ -1,16 +1,16 @@
 [Unit]
-Description=Promo Finder Streamlit app
+Description=Promo Finder web app
 After=network-online.target
 Wants=network-online.target
 
 [Service]
 User=promo
 WorkingDirectory=/opt/promo-finder/app
-# Holds PROMO_FINDER_VIEW_PASSWORD. Root-only, and never in the repo.
+# Holds the AI key and PROMO_FINDER_DEMO_ONLY=1. Root-only, and never in the repo.
 EnvironmentFile=/etc/promo-finder.env
 Environment=HOME=/var/lib/promo-finder
 StateDirectory=promo-finder
-ExecStart=/opt/promo-finder/venv/bin/streamlit run app.py --server.address 127.0.0.1 --server.port 8501
+ExecStart=/opt/promo-finder/venv/bin/python -m uvicorn api:app --host 127.0.0.1 --port 8000
 Restart=always
 RestartSec=3
 MemoryMax=1500M

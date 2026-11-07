@@ -1,5 +1,8 @@
 # Caddy gets the HTTPS certificate on its own. Replace the address with your server's.
 13-206-20-22.sslip.io {
 	encode gzip
-	reverse_proxy 127.0.0.1:8501
+	request_body {
+		max_size 3MB
+	}
+	reverse_proxy 127.0.0.1:8000
 }
