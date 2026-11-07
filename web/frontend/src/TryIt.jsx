@@ -36,7 +36,9 @@ export default function TryIt({ config }) {
     return uploads;
   }, [mode, chosenSamples, pasted, uploads]);
 
-  const ownKey = Boolean(own.api_key.trim());
+  // A key only counts with a model, so a browser autofilling the box can't override the server's setup.
+  const ownKey = Boolean(own.api_key.trim() && own.model.trim());
+  const needsModel = Boolean(own.api_key.trim() && !own.model.trim() && !config.server_key);
   const live = ownKey || config.server_key;
   const sharedKey = live && !ownKey;
   const useSaved = mode === "sample" && (!live || (sharedKey && !runSampleLive));
@@ -169,16 +171,16 @@ export default function TryIt({ config }) {
           <p className="muted small">Any OpenAI-compatible endpoint, or leave Base URL empty for Anthropic's API with a Claude model ID. Your key is only sent with these requests and is never saved.</p>
           <div className="grid two">
             <label className="field">Base URL<input value={own.base_url} onChange={(e) => setOwn({ ...own, base_url: e.target.value })} placeholder="https://your-endpoint/v1" /></label>
-            <label className="field">API key<input type="password" autoComplete="off" value={own.api_key} onChange={(e) => setOwn({ ...own, api_key: e.target.value })} /></label>
+            <label className="field">API key<input type="password" autoComplete="new-password" name="custom-model-api-key" value={own.api_key} onChange={(e) => setOwn({ ...own, api_key: e.target.value })} /></label>
             <label className="field">Judge model<input value={own.model} onChange={(e) => setOwn({ ...own, model: e.target.value })} placeholder="Model ID" /></label>
             <label className="field">Critic model<input value={own.critic_model} onChange={(e) => setOwn({ ...own, critic_model: e.target.value })} placeholder="Same as judge if empty" /></label>
           </div>
         </details>
 
-        {ownKey && !own.model.trim() && <p className="error-text">Find promos is off because you entered an API key with no model. Enter a Judge model under Use your own model, or clear the key.</p>}
+        {needsModel && <p className="error-text">Find promos is off because you entered an API key with no model. Enter a Judge model under Use your own model, or clear the key.</p>}
 
         {overLimit && <p className="error-text">The free key runs up to {config.max_episodes_shared} episodes at a time. Remove some files, or add your own key.</p>}
-        <button className="btn primary run" disabled={busy || !scripts.length || overLimit || (ownKey && !own.model.trim())} onClick={runIt}>
+        <button className="btn primary run" disabled={busy || !scripts.length || overLimit || needsModel} onClick={runIt}>
           {busy ? "Working..." : "Find promos"}
         </button>
       </section>
