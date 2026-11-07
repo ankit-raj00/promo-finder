@@ -212,6 +212,17 @@ def test_pasting_junk_gives_a_clear_error():
     assert any("no scenes found" in e.value for e in app.error)
 
 
+def test_visitor_errors_are_plain_and_never_show_the_key():
+    class Limited(Exception):
+        status_code = 429
+
+    class Odd(Exception):
+        pass
+
+    assert "limit is used up" in llm_client.friendly_error(Limited("secret-key"))
+    assert "secret-key" not in llm_client.friendly_error(Odd("secret-key"))
+
+
 if __name__ == "__main__":
     tests =[v for k, v in dict(globals()).items() if k.startswith("test_")]
     for t in tests:

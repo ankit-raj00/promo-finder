@@ -35,7 +35,8 @@ _load_dotenv()
 BASE_URL = os.environ.get("PROMO_FINDER_BASE_URL", "")
 _session = contextvars.ContextVar("llm_session", default=None)  # per-user settings when the app is hosted
 STOP_REASONS = {"stop": "end_turn", "length": "max_tokens", "content_filter": "refusal"}
-MAX_COOLDOWN_WAITS = 3
+# A hosted copy sets this low, so a visitor gets a clear message instead of a long wait.
+MAX_COOLDOWN_WAITS = int(os.environ.get("PROMO_FINDER_COOLDOWN_WAITS", "3"))
 MAX_COOLDOWN_SECONDS = 420
 
 
@@ -43,6 +44,15 @@ def cooldown_seconds(error_text: str) -> int:
     """Uses the gateway's stated cooldown if it gives one."""
     m = re.search(r"reset_seconds['\"]?:\s*(\d+)", error_text)
     return min(int(m.group(1)) + 5, MAX_COOLDOWN_SECONDS) if m else 60
+
+
+def friendly_error(e: Exception) -> str:
+    """Plain words for a visitor. Never includes the key, even if the provider's message does."""
+    if getattr(e, "status_code", None) == 429:
+        return "the AI limit is used up for now. Try again later, or add your own key in the sidebar."
+    if getattr(e, "status_code", None) in (401, 403):
+        return "the API key was rejected. Check the key and the Base URL."
+    return f"{type(e).__name__}. Check the model name and Base URL, or try again."
 
 
 def use_session(base_url: str, api_key: str):

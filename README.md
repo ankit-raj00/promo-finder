@@ -16,7 +16,9 @@ To browse the 50-episode results in the app, unzip the raw outputs so the `outpu
 2. Download the editor sheet. It's a CSV with every timestamp, hook and cliffhanger, plus empty columns for an editor's decision and notes.
 3. Open **Run on new episodes**, pick a sample episode, paste a script, or upload `.txt` files, then press **Find promos**.
 
-With no API key, the sample episodes show saved results from a real AI run, and pasted or uploaded scripts get keyword-only picks, labelled as such. For live AI judgment, enter these in the sidebar. They're used for your session only and are never saved.
+No key is needed on the live app. Sample episodes show saved results from a real AI run, and pasted or uploaded scripts get live AI judgment through a free Gemini key (`gemini-flash-lite-latest`). It can run out for a while, and that model wasn't part of the comparison in `MODEL_SELECTION.md`, so its picks can differ from the submitted results. Don't paste confidential scripts, because they go to Google.
+
+Running it yourself with no key, pasted or uploaded scripts get keyword-only picks, labelled as such. To use your own model, enter these in the sidebar. They're used for your session only and are never saved.
 
 | To use | Base URL | Models |
 |---|---|---|
@@ -30,7 +32,7 @@ Needs Python 3.10 or newer.
 
 ```bash
 pip install -r requirements.txt
-python test_pipeline.py     # 14 offline tests, no key needed
+python test_pipeline.py     # 15 offline tests, no key needed
 streamlit run app.py
 ```
 
@@ -77,7 +79,7 @@ The tool reads text, so it can't judge acting, music or pacing. It can miss a gr
 
 ## Hosting
 
-The live app runs on one small AWS server, using `deploy/promo-finder.service` for the app and `deploy/Caddyfile` for HTTPS. No model API key is stored there.
+The live app runs on one small AWS server, using `deploy/promo-finder.service` for the app and `deploy/Caddyfile` for HTTPS. Its free Gemini key is in a root-only file on the server, never in this repo, and the app limits it to 5 episodes per run.
 
 It also runs on [Streamlit Community Cloud](https://streamlit.io/cloud): point it at this repo with `app.py` as the main file.
 

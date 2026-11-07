@@ -183,7 +183,7 @@ def run_episodes(episodes: list[dict]) -> dict:
         try:
             result = judge_live(episode, context) if live else heuristic_only(episode)
         except Exception as e:  # noqa: BLE001 - show any API failure and keep going
-            failed.append(f"{episode['episode_number']}: {type(e).__name__}: {e}")
+            failed.append(f"{episode['episode_number']}: {llm_client.friendly_error(e)}")
             continue
         if not result["promos"]:
             empty.append({"episode": episode["episode_number"], "reason": result.get("no_good_promo_reason")})
@@ -268,8 +268,15 @@ with tab3:
     SAMPLE_MODE, PASTE_MODE, UPLOAD_MODE = "Sample episode", "Paste script text", "Upload .txt files"
     mode = st.radio("Choose an input", [SAMPLE_MODE, PASTE_MODE, UPLOAD_MODE], horizontal=True)
     live = has_live_key()
-    if live:
-        st.info("**Live AI is on.** Find promos will judge this input now.")
+    shared_key = live and not side_key
+    if shared_key and mode == SAMPLE_MODE:
+        st.info("**No key needed.** The sample show has saved results from a real AI run, so they appear instantly. "
+                "You can also run the AI live below.")
+    elif shared_key:
+        st.info("**Live AI is on, with no key needed.** It uses a free Gemini key, so it can run out for a while. "
+                "Your text goes to Google, which may use it to improve its products, so **don't paste confidential scripts**.")
+    elif live:
+        st.info("**Live AI is on,** using your key. Find promos will judge this input now.")
     elif mode == SAMPLE_MODE:
         st.info("**No key needed.** The sample show has saved results from a real AI run, so they appear instantly. "
                 "To run the AI live, add a key in the sidebar.")
@@ -319,12 +326,12 @@ with tab3:
     if episodes:
         lines = sum(len(s["elements"]) for e in episodes for s in e["scenes"])
         st.write(f"Read **{len(episodes)} episode(s)**: {sum(e['duration_s'] for e in episodes):.0f}s of story, {lines} script lines.")
-        shared_key = live and not side_key
+        run_sample_live = shared_key and mode == SAMPLE_MODE and st.checkbox("Run the AI live instead of showing saved results")
         if shared_key and len(episodes) > MAX_EPISODES_ON_SHARED_KEY:
             st.error(f"This server's shared key runs up to {MAX_EPISODES_ON_SHARED_KEY} episodes at a time. "
                      "Add your own key in the sidebar for more.")
         elif st.button("Find promos", type="primary"):
-            if mode == SAMPLE_MODE and not live:
+            if mode == SAMPLE_MODE and (not live or (shared_key and not run_sample_live)):
                 st.session_state["run"] = saved_sample_run([e["source_file"] for e in episodes])
             else:
                 st.session_state["run"] = run_episodes(episodes)
