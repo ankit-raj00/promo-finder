@@ -199,7 +199,10 @@ def test_samples_include_saved_ai_results():
 
 def test_stats_are_counts_only_with_no_script_text():
     stats = _site().get("/api/stats").json()
+    models = stats.pop("models")
     assert stats["promos"] == 78 and all(isinstance(v, (int, float)) for v in stats.values())
+    # The only text allowed is a short model name.
+    assert models["critic_separation_pct"] == 89 and all(isinstance(v, (int, float)) or len(v) < 30 for v in models.values())
 
 
 def test_live_steps_keep_only_valid_order_and_montages():

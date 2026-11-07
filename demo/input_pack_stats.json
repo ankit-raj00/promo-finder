@@ -18,5 +18,27 @@
   "spoiler_high": 12,
   "spoiler_low": 48,
   "clips_over_60s": 1,
-  "longest_clip_s": 60.25
+  "longest_clip_s": 60.25,
+  "review_accepted": 8,
+  "review_retimed": 1,
+  "review_replaced": 1,
+  "models": {
+    "judge_winner": "Gemini 3.8 Flash Low",
+    "judge_models_compared": 5,
+    "judge_winner_quality": 3.58,
+    "judge_runner_up": "Gemini 3.1 Flash Lite",
+    "judge_runner_up_quality": 3.62,
+    "critic_winner": "Claude Sonnet 4.6",
+    "critic_separation_pct": 89,
+    "spoiler_winner": "Gemini 3.8 Flash Low",
+    "spoiler_high_caught": 4,
+    "spoiler_false_alarms": 2,
+    "order_winner": "Gemini 3.8 Flash Low",
+    "order_stability": 0.88,
+    "order_speed_vs_next": 2.0,
+    "montage_winner": "Gemini 3.8 Flash Low",
+    "montage_valid": 9,
+    "montage_proposed": 9,
+    "montage_models_below_half_valid": 2
+  }
 }

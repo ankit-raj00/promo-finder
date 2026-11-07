@@ -1,43 +1,43 @@
 import React, { useState } from "react";
 
 const buildSteps = (s) => ({
-  read: { kind: "code", n: 1, title: "Read the script", short: "Scenes and timed lines", file: "parser.py",
+  read: { kind: "code", n: 1, title: "Read the script", short: "Scenes and timed lines", file: "promo_finder/ingest/parser.py",
     what: "Turns each screenplay file into scenes and lines, with a start and end time for every line.",
     why: "Scripts are regular enough that rules handle this exactly and for free. A model could only add mistakes.",
     out: "Every line, with its speaker, text and timestamps." },
-  hints: { kind: "code", n: 2, title: "Find keyword hints", short: "Possible moments", file: "heuristics.py",
+  hints: { kind: "code", n: 2, title: "Find keyword hints", short: "Possible moments", file: "promo_finder/ingest/heuristics.py",
     what: "Looks for words that often signal drama, and suggests possible moments to the judge.",
     why: "It's only a hint, because keywords alone pick badly: it found nothing in two episodes and flagged ordinary dialogue in others.",
     out: "A short list of candidate windows." },
-  judge: { kind: "ai", n: 3, title: "Pick the clips", short: "The judge", file: "llm_scorer.py",
+  judge: { kind: "ai", n: 3, title: "Pick the clips", short: "The judge", file: "promo_finder/judge/scorer.py",
     what: "A model reads the whole episode, with a one-line summary of every other episode, and chooses the best moments. It may also decide that an episode has no good promo.",
     why: "Whether a moment is gripping is a judgment call, so this is real AI work. The model answers with line IDs, never with text, so it can't invent a quote or a timestamp.",
     out: "Line IDs for each clip's start, end, hook and cliffhanger. Code turns them into exact times and words." },
-  check: { kind: "code", n: 4, title: "Check every pick", short: "Rules against the script", file: "validate.py",
+  check: { kind: "code", n: 4, title: "Check every pick", short: "Rules against the script", file: "promo_finder/judge/validate.py",
     what: "Is it 20-60 seconds? Is the hook in the first 3 seconds, and the cliffhanger at the cut? Do the quotes match the script?",
     why: `These rules have a right answer, so code checks them every time. On the 50-episode run, ${s.episodes_with_retry} episodes needed at least one retry, and ${s.picks_dropped} picks were dropped.`,
     out: "A pass, or the exact error to send back to the model." },
-  critic: { kind: "ai", n: 5, title: "Get a second opinion", short: "The critic", file: "critic.py",
+  critic: { kind: "ai", n: 5, title: "Get a second opinion", short: "The critic", file: "promo_finder/judge/critic.py",
     what: "A separate step sees only the clip's text, like a stranger would, and scores the hook, the cliffhanger and whether it makes sense alone.",
     why: `The judge rated ${s.self_rated_hook_4_or_5} of its own ${s.promos} hooks 4 or 5 out of 5, so its ratings can't rank anything. The critic's hook scores spread from ${s.critic_hook_min} to ${s.critic_hook_max}.`,
     out: "Scores from 1 to 5, which replace the judge's own ratings." },
-  spoiler: { kind: "ai", n: 6, title: "Check for spoilers", short: "Does it give away a twist?", file: "spoiler_check.py",
+  spoiler: { kind: "ai", n: 6, title: "Check for spoilers", short: "Does it give away a twist?", file: "promo_finder/judge/spoiler.py",
     what: "Given a summary of every episode, the model flags clips that reveal a late twist.",
     why: "A promo recruits new viewers, so it shouldn't give away the payoff. It flags too much, so it's a prompt for an editor, not a verdict.",
     out: "A risk level: none, low or high." },
-  score: { kind: "code", n: 7, title: "Score and rank", short: "A formula anyone can read", file: "rank.py",
+  score: { kind: "code", n: 7, title: "Score and rank", short: "A formula anyone can read", file: "promo_finder/rank/ranker.py",
     what: "35% hook + 30% cliffhanger + 20% makes sense alone + 15% good length, minus a penalty for spoiler or platform risk.",
     why: "Arithmetic should be code. An editor can see exactly why a clip ranked where it did.",
     out: "Every promo in a ranked list." },
-  order: { kind: "ai", n: 8, title: "Choose what to post first", short: "Side-by-side comparison", file: "global_rank.py",
+  order: { kind: "ai", n: 8, title: "Choose what to post first", short: "Side-by-side comparison", file: "promo_finder/rank/post_first.py",
     what: "A model compares the top 15 clips side by side, then orders the top 10 and writes a reason for each slot.",
     why: "A score can't weigh a whole list against itself. Ranking answers \"what's strongest\", and this answers \"what should a stranger see first\".",
     out: "A top 10, with a reason per slot." },
-  montage: { kind: "ai", n: 9, title: "Join moments across episodes", short: "Checked by code", file: "cross_episode.py",
+  montage: { kind: "ai", n: 9, title: "Join moments across episodes", short: "Checked by code", file: "promo_finder/rank/montages.py",
     what: "A model proposes clips that join moments from different episodes. Code checks the length and story order, and drops anything invalid.",
     why: "The brief allows promos that join moments. One proposed montage on the real run failed a check and was dropped.",
     out: "A few validated montages." },
-  editor: { kind: "person", n: 10, title: "An editor decides", short: "The final call", file: "editor_sheet.py",
+  editor: { kind: "person", n: 10, title: "An editor decides", short: "The final call", file: "promo_finder/export/editor_sheet.py",
     what: "An editor works from the exported sheet, approves or changes the picks, and cuts the footage.",
     why: "The tool reads text, so it can't judge acting, music or pacing. It removes \"watch every episode\", not the editor. Rejected picks become new test cases.",
     out: "Promos ready to post." },
@@ -45,12 +45,12 @@ const buildSteps = (s) => ({
 
 const KIND = { code: "Code", ai: "AI", person: "Person" };
 
-const MODELS = [
-  ["Judge", "Gemini 3.8 Flash Low", "5 models, 10 episodes, 2 runs each", "Tied with Flash Lite on quality (3.58 vs 3.62 of 5); won on speed, the tie-break set in advance"],
-  ["Critic", "Claude Sonnet 4.6", "12 real promos vs 12 random clips, 2 runs", "Scored a promo above a random clip 89% of the time"],
-  ["Spoiler check", "Gemini 3.8 Flash Low", "20 labelled clips, 2 runs", "Caught all 4 high-risk clips, with 2 false alarms"],
-  ["Post-first order", "Gemini 3.8 Flash Low", "Same list, 3 runs", "Top 10s overlapped by 0.88 between runs; twice as fast as the other leader"],
-  ["Montages", "Gemini 3.8 Flash Low", "3 runs of 3 montages", "9 of 9 valid; two other models failed"],
+const modelRows = (m) => [
+  ["Judge", m.judge_winner, `${m.judge_models_compared} models, 10 episodes, 2 runs each`, `Tied with ${m.judge_runner_up} on quality (${m.judge_winner_quality} vs ${m.judge_runner_up_quality} of 5); won on speed, the tie-break set in advance`],
+  ["Critic", m.critic_winner, "12 real promos vs 12 random clips, 2 runs", `Scored a promo above a random clip ${m.critic_separation_pct}% of the time`],
+  ["Spoiler check", m.spoiler_winner, "20 labelled clips, 2 runs", `Caught all ${m.spoiler_high_caught} high-risk clips, with ${m.spoiler_false_alarms} false alarms`],
+  ["Post-first order", m.order_winner, "Same list, 3 runs", `Top 10s overlapped by ${m.order_stability} between runs; ${m.order_speed_vs_next} times as fast as the other leader`],
+  ["Montages", m.montage_winner, "3 runs of 3 montages", `${m.montage_valid} of ${m.montage_proposed} valid; ${m.montage_models_below_half_valid} other models fell below half valid`],
 ];
 
 function Node({ steps, id, selected, onSelect }) {
@@ -155,11 +155,11 @@ export default function Pipeline({ stats }) {
       <div className="table-wrap">
         <table>
           <thead><tr><th>Step</th><th>Winner</th><th>Test</th><th>Result</th></tr></thead>
-          <tbody>{MODELS.map((m) => <tr key={m[0]}>{m.map((c, i) => <td key={i}>{c}</td>)}</tr>)}</tbody>
+          <tbody>{modelRows(stats.models).map((m) => <tr key={m[0]}>{m.map((c, i) => <td key={i}>{c}</td>)}</tr>)}</tbody>
         </table>
       </div>
       <p className="muted small">
-        A Claude model served as the LLM judge for the judge's final round and supplied the test labels for the critic and spoiler check, not a person, so that evidence is weaker. New runs use Flash Low for the critic too, because the winner hit long rate limits. This site's live runs use the free Gemini Flash Lite for speed, a model outside this comparison.
+        A Claude model served as the LLM judge for the judge's final round and supplied the test labels for the critic and spoiler check, not a person, so that evidence is weaker. New runs use Flash Low for the critic too, because the winner hit long rate limits. This site's live runs use free Gemini models for speed. The judge is Gemini 3.1 Flash Lite, the finalist above. The other AI steps use Gemini's current Flash Lite, which wasn't in these tests.
       </p>
 
       <h2>Scale and cost</h2>

@@ -39,7 +39,7 @@ export default function Quality({ results, stats: s }) {
       </div>
 
       <h2>Top 10 review</h2>
-      <p>In place of an editor, a Claude model reviewed the top 10 from the script text: <b>8 accepted, 1 retimed, 1 replaced</b>. No person has reviewed them, and that's weaker evidence than a real editor's check.</p>
+      <p>In place of an editor, a Claude model reviewed the top 10 from the script text: <b>{s.review_accepted} accepted, {s.review_retimed} retimed, {s.review_replaced} replaced</b>. No person has reviewed them, and that's weaker evidence than a real editor's check.</p>
 
       <h2>How I'd know it works with a real team</h2>
       <div className="grid three">

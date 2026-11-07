@@ -17,7 +17,7 @@ To browse the 50-episode results in the app, unzip the raw outputs so the `outpu
 3. Open **Try it**, pick a sample episode, paste a script, or upload `.txt` files, then press **Find promos**.
 4. Open **How it works** for a flowchart of the pipeline, and **Quality** for where it fails.
 
-No key is needed on the live app. Sample episodes show saved results from a real AI run, and pasted or uploaded scripts get live AI judgment through a free Gemini key (`gemini-flash-lite-latest`). It can run out for a while, and that model wasn't part of the comparison in `docs/MODEL_SELECTION.md`, so its picks can differ from the submitted results. Don't paste confidential scripts, because they go to Google.
+No key is needed on the live app. Sample episodes show saved results from a real AI run, and pasted or uploaded scripts get live AI judgment through a free Gemini key. The judge step uses `gemini-3.1-flash-lite`, the finalist in `docs/MODEL_SELECTION.md`, and the other AI steps use `gemini-flash-lite-latest`, which wasn't tested there. The key can run out for a while, and picks can differ from the submitted results. Don't paste confidential scripts, because they go to Google.
 
 Running it yourself with no key, pasted or uploaded scripts get keyword-only picks, labelled as such. To use your own model, enter these under **Use your own model** on the Try it tab. They're used for your session only and are never saved.
 
