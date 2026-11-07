@@ -181,6 +181,7 @@ def config():
         "default_model": os.environ.get("PROMO_FINDER_MODEL", ""),
         "has_real_results": has_real_results(),
         "max_episodes_shared": MAX_EPISODES_ON_SHARED_KEY,
+        "free_gemini_key": "generativelanguage" in os.environ.get("PROMO_FINDER_BASE_URL", ""),
     }
 
 
