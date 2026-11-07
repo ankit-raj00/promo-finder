@@ -6,7 +6,9 @@ Built for Problem 1 of Kuku's AI Generalist assignment.
 
 **Live app: https://13-206-20-22.sslip.io**
 
-The app opens on a sample show I wrote, so anyone can try it. Kuku's scripts are confidential and aren't in this repo. The results from its 50 episodes are behind a password in the app, and the password is on the submission form.
+The app shows a sample show I wrote, so anyone can try it. Kuku's scripts are confidential, so neither they nor the results that quote them are in this repo or the hosted app. Those results are in the raw outputs linked on the submission form.
+
+To browse the 50-episode results in the app, unzip the raw outputs so the `outputs` folder sits next to `app.py`, then run the app on your computer.
 
 ## Try it
 
@@ -75,12 +77,14 @@ The tool reads text, so it can't judge acting, music or pacing. It can miss a gr
 
 ## Hosting
 
-The live app runs on one small AWS server, using `deploy/promo-finder.service` for the app and `deploy/Caddyfile` for HTTPS. The password comes from `PROMO_FINDER_VIEW_PASSWORD` in a root-only file on the server. No model API key is stored there.
+The live app runs on one small AWS server, using `deploy/promo-finder.service` for the app and `deploy/Caddyfile` for HTTPS. No model API key is stored there.
 
-It also runs on [Streamlit Community Cloud](https://streamlit.io/cloud): point it at this repo with `app.py` as the main file. That shows the sample show only, because the real results aren't in the repo.
+It also runs on [Streamlit Community Cloud](https://streamlit.io/cloud): point it at this repo with `app.py` as the main file.
+
+If a hosted copy ever holds confidential results in `outputs/`, set `PROMO_FINDER_VIEW_PASSWORD` and the app keeps them behind a password.
 
 ## How the submitted results were produced
 
 Kuku's results came from running this pipeline on all 50 episodes, using the models in `.env.example`, except that the critic was `agy/claude-sonnet-4-6` (`MODEL_SELECTION.md` explains why that default changed). The models ran through OmniRoute on an Antigravity login. OmniRoute's own notes say Antigravity's terms prohibit proxy access, so a production version should use an official API key.
 
-In this repo, `demo/outputs/` holds the sample show's results.
+In this repo, `demo/outputs/` holds the sample show's results. `outputs/` is ignored by git, so the raw results can't be committed by accident.
