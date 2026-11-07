@@ -182,6 +182,36 @@ def test_password_keeps_real_results_hidden():
     assert any(s.value.startswith(f"{demo['total_promos']} validated promos") for s in app.subheader)
 
 
+def test_sample_shows_saved_ai_results_without_a_key():
+    app = _app()
+    next(b for b in app.button if b.label == "Find promos").click()
+    app = app.run()
+    assert not app.exception
+    assert any("saved results from a real AI run): 5 promos" in s.value for s in app.success)
+
+
+def test_pasted_script_runs_without_a_key():
+    app = _app()
+    next(r for r in app.radio if r.label == "Choose an input").set_value("Paste script text")
+    app = app.run()
+    next(a for a in app.text_area if a.label.startswith("Paste")).set_value(next(SAMPLES.glob("episode-001-*.txt")).read_text(encoding="utf-8"))
+    app = app.run()
+    next(b for b in app.button if b.label == "Find promos").click()
+    app = app.run()
+    assert not app.exception
+    assert any("keyword-only fallback" in s.value for s in app.success)
+
+
+def test_pasting_junk_gives_a_clear_error():
+    app = _app()
+    next(r for r in app.radio if r.label == "Choose an input").set_value("Paste script text")
+    app = app.run()
+    next(a for a in app.text_area if a.label.startswith("Paste")).set_value("this is not a screenplay")
+    app = app.run()
+    assert not app.exception
+    assert any("no scenes found" in e.value for e in app.error)
+
+
 if __name__ == "__main__":
     tests =[v for k, v in dict(globals()).items() if k.startswith("test_")]
     for t in tests:

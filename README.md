@@ -14,9 +14,9 @@ To browse the 50-episode results in the app, unzip the raw outputs so the `outpu
 
 1. Open the live app and look at **Post first**: the top 10 clips, each with a reason for its slot.
 2. Download the editor sheet. It's a CSV with every timestamp, hook and cliffhanger, plus empty columns for an editor's decision and notes.
-3. Open **Run on new episodes**, choose the sample show or upload your own `.txt` files, and press **Find promos**.
+3. Open **Run on new episodes**, pick a sample episode, paste a script, or upload `.txt` files, then press **Find promos**.
 
-With no API key, step 3 gives keyword-only picks and says so. For real judgment, enter these in the sidebar. They're used for your session only and are never saved.
+With no API key, the sample episodes show saved results from a real AI run, and pasted or uploaded scripts get keyword-only picks, labelled as such. For live AI judgment, enter these in the sidebar. They're used for your session only and are never saved.
 
 | To use | Base URL | Models |
 |---|---|---|
@@ -30,7 +30,7 @@ Needs Python 3.10 or newer.
 
 ```bash
 pip install -r requirements.txt
-python test_pipeline.py     # 11 offline tests, no key needed
+python test_pipeline.py     # 14 offline tests, no key needed
 streamlit run app.py
 ```
 

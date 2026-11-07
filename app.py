@@ -34,6 +34,7 @@ DEMO_OUT = BASE / "demo" / "outputs"
 SAMPLES = BASE / "samples" / "demo_show"
 # On a hosted copy, real results quote confidential scripts, so this password guards them.
 VIEW_PASSWORD = os.environ.get("PROMO_FINDER_VIEW_PASSWORD", "")
+MAX_EPISODES_ON_SHARED_KEY = 5  # limits what visitors can spend if a hosted copy has its own key
 
 st.set_page_config(page_title="Kuku Promo Finder", layout="wide")
 st.title("Kuku Promo Finder")
@@ -201,6 +202,16 @@ def run_episodes(episodes: list[dict]) -> dict:
     return {"rows": rows, "empty": empty, "failed": failed, "mode": "live model" if live else "keyword-only fallback"}
 
 
+def saved_sample_run(names: list[str]) -> dict:
+    """Saved results from a real pipeline run on the sample show, so nobody needs a key to see real output."""
+    stems = {Path(n).stem for n in names}
+    saved = json.loads((DEMO_OUT / "ranked_promos.json").read_text(encoding="utf-8"))
+    rows = [dict(r) for r in saved["ranked_promos"] if Path(r["source_file"]).stem in stems]
+    for i, r in enumerate(rows, 1):
+        r["rank"] = i
+    return {"rows": rows, "empty": [], "failed": [], "mode": "saved results from a real AI run"}
+
+
 ranked = json.loads(RANKED.read_text(encoding="utf-8")) if RANKED.exists() else None
 tab1, tab2, tab3, tab4 = st.tabs(["Post first", "All promos", "Run on new episodes", "Quality"])
 
@@ -254,20 +265,36 @@ with tab2:
                 st.write(f"**{n['episode']}**: {n['reason']}")
 
 with tab3:
-    st.info(f"Judgment mode: **{'live model' if has_live_key() else 'keyword-only fallback (no API key set)'}**")
-    samples = sorted(SAMPLES.glob("*.txt"))
-    ALL_SAMPLES = "All 3 sample episodes"
-    sample = st.selectbox("Try the sample show", ["None", ALL_SAMPLES] + [s.name for s in samples])
-    uploads = st.file_uploader("Or upload screenplay .txt files, one or a whole show (same format as the input pack)",
-                               type="txt", accept_multiple_files=True)
-    if uploads:
-        files = [(u.name, u.getvalue()) for u in uploads]
-    elif sample == ALL_SAMPLES:
-        files = [(s.name, s.read_bytes()) for s in samples]
-    elif sample != "None":
-        files = [(sample, (SAMPLES / sample).read_bytes())]
+    SAMPLE_MODE, PASTE_MODE, UPLOAD_MODE = "Sample episode", "Paste script text", "Upload .txt files"
+    mode = st.radio("Choose an input", [SAMPLE_MODE, PASTE_MODE, UPLOAD_MODE], horizontal=True)
+    live = has_live_key()
+    if live:
+        st.info("**Live AI is on.** Find promos will judge this input now.")
+    elif mode == SAMPLE_MODE:
+        st.info("**No key needed.** The sample show has saved results from a real AI run, so they appear instantly. "
+                "To run the AI live, add a key in the sidebar.")
     else:
-        files = []
+        st.warning("**No API key set, so these are keyword-only picks, not AI judgment.** "
+                   "Add a key in the sidebar for the real pipeline, or try a sample episode.")
+
+    files = []
+    if mode == SAMPLE_MODE:
+        samples = sorted(SAMPLES.glob("*.txt"))
+        ALL_SAMPLES = "All 3 sample episodes"
+        sample = st.selectbox("Sample episode", [ALL_SAMPLES] + [s.name for s in samples])
+        chosen = samples if sample == ALL_SAMPLES else [SAMPLES / sample]
+        files = [(s.name, s.read_bytes()) for s in chosen]
+        with st.expander("Read the script"):
+            for s in chosen:
+                st.text(s.read_text(encoding="utf-8"))
+    elif mode == PASTE_MODE:
+        pasted = st.text_area("Paste one episode's screenplay", height=250, max_chars=200_000,
+                              placeholder="Same format as the input pack. Choose Sample episode, then Read the script, to see it.")
+        if pasted.strip():
+            files = [("pasted-script.txt", pasted.encode("utf-8"))]
+    else:
+        uploads = st.file_uploader("Upload screenplay .txt files, one or a whole show", type="txt", accept_multiple_files=True)
+        files = [(u.name, u.getvalue()) for u in uploads or []]
 
     episodes = []
     for name, content in files:
@@ -282,19 +309,29 @@ with tab3:
         finally:
             path.unlink(missing_ok=True)
         if not episode["scenes"]:
-            st.error(f"{name}: no scenes found. Check that it matches the format in samples/demo_show.")
+            st.error(f"{name}: no scenes found. Check that it matches the format of the sample episodes.")
             continue
         episode["source_file"] = name
+        episode["episode_number"] = episode["episode_number"] or Path(name).stem
         episodes.append(episode)
 
+    input_id = (mode, tuple((name, hash(content)) for name, content in files))
     if episodes:
         lines = sum(len(s["elements"]) for e in episodes for s in e["scenes"])
         st.write(f"Read **{len(episodes)} episode(s)**: {sum(e['duration_s'] for e in episodes):.0f}s of story, {lines} script lines.")
-        if st.button("Find promos"):
-            st.session_state["run"] = run_episodes(episodes)
+        shared_key = live and not side_key
+        if shared_key and len(episodes) > MAX_EPISODES_ON_SHARED_KEY:
+            st.error(f"This server's shared key runs up to {MAX_EPISODES_ON_SHARED_KEY} episodes at a time. "
+                     "Add your own key in the sidebar for more.")
+        elif st.button("Find promos", type="primary"):
+            if mode == SAMPLE_MODE and not live:
+                st.session_state["run"] = saved_sample_run([e["source_file"] for e in episodes])
+            else:
+                st.session_state["run"] = run_episodes(episodes)
+            st.session_state["run_for"] = input_id
 
-    run = st.session_state.get("run")  # kept across reruns, so a download click doesn't clear the results
-    if run:
+    run = st.session_state.get("run") if st.session_state.get("run_for") == input_id else None
+    if run:  # kept across reruns, so a download click doesn't clear the results
         if run["rows"] or not run["failed"]:
             st.success(f"Done ({run['mode']}): {len(run['rows'])} promos.")
         for failure in run["failed"]:
@@ -307,7 +344,7 @@ with tab3:
         for r in run["rows"]:
             heading = f"#{r['rank']} (score {r['rank_score']}) " if "rank_score" in r else f"{r['rank']}. "
             render(r, heading=heading)
-            if r["errors"]:
+            if r.get("errors"):
                 st.error("Validation: " + "; ".join(r["errors"]))
 
 with tab4:
