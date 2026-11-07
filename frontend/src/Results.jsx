@@ -72,7 +72,7 @@ export function PromoCard({ promo, heading }) {
   );
 }
 
-function Montage({ montage }) {
+export function Montage({ montage }) {
   return (
     <article className="card promo">
       <div className="promo-head">

@@ -1,0 +1,22 @@
+{
+  "episodes": 50,
+  "promos": 78,
+  "empty_episodes": 3,
+  "montages": 3,
+  "passed_checks": 78,
+  "episodes_with_retry": 32,
+  "picks_dropped": 4,
+  "self_rated_hook_4_or_5": 77,
+  "critic_hook_min": 2,
+  "critic_hook_max": 5,
+  "pick_or_skip_agreement": 50,
+  "mean_time_overlap": 0.68,
+  "consistency": 0.685,
+  "weak_hooks": 9,
+  "need_backstory": 18,
+  "same_episode_overlaps": 7,
+  "spoiler_high": 12,
+  "spoiler_low": 48,
+  "clips_over_60s": 1,
+  "longest_clip_s": 60.25
+}

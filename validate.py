@@ -177,37 +177,43 @@ def validate(promos_dir: Path, parsed_dir: Path, repair_dir: Path | None = None)
 def validate_montages(path: Path, parsed_dir: Path):
     """Cross-episode promos: each segment names its own source_file."""
     data = json.loads(path.read_text(encoding="utf-8"))
-    results = []
     cache = {}
+    results = []
     for i, m in enumerate(data["montages"]):
-        errs, warns = [], []
-        total = 0.0
         for s in m["segments"]:
             if s["source_file"] not in cache:
                 ep = json.loads((parsed_dir / s["source_file"]).read_text(encoding="utf-8"))
                 cache[s["source_file"]] = (ep, elements(ep))
-            ep, _ = cache[s["source_file"]]
-            if s["start_s"] >= s["end_s"] or s["end_s"] > ep["duration_s"] + 0.5:
-                errs.append(f"bad segment {s['source_file']} {s['start']}-{s['end']}")
-            total += s["end_s"] - s["start_s"]
-        if not (MIN_LEN - LEN_TOL <= total <= MAX_LEN + LEN_TOL):
-            errs.append(f"total length {total:.1f}s outside 20-60s")
-        order = [(s["source_file"], s["start_s"]) for s in m["segments"]]
-        if order != sorted(order):
-            errs.append("segments are not in story order")
-        for key, seg in (("hook", m["segments"][0]), ("cliffhanger", m["segments"][-1])):
-            _, els = cache[seg["source_file"]]
-            status, el = locate(m[key]["quote"], els, to_s(m[key]["timestamp"]))
-            if status != "exact":
-                (errs if status == "missing" else warns).append(f"{key} quote {status}")
-            elif not (seg["start_s"] - TS_TOL_S <= el["start_s"] <= seg["end_s"] + TS_TOL_S):
-                errs.append(f"{key} line at {el['start']} outside its segment")
-            elif key == "hook" and el["start_s"] - seg["start_s"] > HOOK_WINDOW_S:
-                errs.append("hook not within first 3s")
-        results.append({"montage": i, "title": m.get("title"), "total_length_s": round(total, 2),
-                        "status": "error" if errs else ("warning" if warns else "ok"),
-                        "errors": errs, "warnings": warns})
+        results.append({"montage": i, **check_montage(m, cache)})
     return results
+
+
+def check_montage(m: dict, cache: dict) -> dict:
+    """cache maps each segment's source_file to (episode, elements)."""
+    errs, warns = [], []
+    total = 0.0
+    for s in m["segments"]:
+        ep, _ = cache[s["source_file"]]
+        if s["start_s"] >= s["end_s"] or s["end_s"] > ep["duration_s"] + 0.5:
+            errs.append(f"bad segment {s['source_file']} {s['start']}-{s['end']}")
+        total += s["end_s"] - s["start_s"]
+    if not (MIN_LEN - LEN_TOL <= total <= MAX_LEN + LEN_TOL):
+        errs.append(f"total length {total:.1f}s outside 20-60s")
+    order = [(s["source_file"], s["start_s"]) for s in m["segments"]]
+    if order != sorted(order):
+        errs.append("segments are not in story order")
+    for key, seg in (("hook", m["segments"][0]), ("cliffhanger", m["segments"][-1])):
+        _, els = cache[seg["source_file"]]
+        status, el = locate(m[key]["quote"], els, to_s(m[key]["timestamp"]))
+        if status != "exact":
+            (errs if status == "missing" else warns).append(f"{key} quote {status}")
+        elif not (seg["start_s"] - TS_TOL_S <= el["start_s"] <= seg["end_s"] + TS_TOL_S):
+            errs.append(f"{key} line at {el['start']} outside its segment")
+        elif key == "hook" and el["start_s"] - seg["start_s"] > HOOK_WINDOW_S:
+            errs.append("hook not within first 3s")
+    return {"title": m.get("title"), "total_length_s": round(total, 2),
+            "status": "error" if errs else ("warning" if warns else "ok"),
+            "errors": errs, "warnings": warns}
 
 
 def _print(results, label_key):

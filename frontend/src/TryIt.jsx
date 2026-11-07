@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { PromoCard, SheetButton } from "./Results.jsx";
+import { Montage, PromoCard, SheetButton } from "./Results.jsx";
 
 const ALL = "__all__";
 const MAX_FILE_BYTES = 1024 * 1024;
@@ -14,6 +14,7 @@ async function postJson(path, body) {
 export default function TryIt({ config }) {
   const [mode, setMode] = useState("sample");
   const [samples, setSamples] = useState([]);
+  const [savedExtras, setSavedExtras] = useState({ post_first: [], montages: [] });
   const [sample, setSample] = useState(ALL);
   const [pasted, setPasted] = useState("");
   const [uploads, setUploads] = useState([]);
@@ -25,7 +26,7 @@ export default function TryIt({ config }) {
   const [failure, setFailure] = useState("");
 
   useEffect(() => {
-    fetch("/api/samples").then((r) => r.json()).then(setSamples).catch(() => setFailure("The sample episodes couldn't load. Please refresh the page."));
+    fetch("/api/samples").then((r) => r.json()).then((d) => { setSamples(d.samples); setSavedExtras(d); }).catch(() => setFailure("The sample episodes couldn't load. Please refresh the page."));
   }, []);
 
   const chosenSamples = useMemo(() => (sample === ALL ? samples : samples.filter((s) => s.name === sample)), [samples, sample]);
@@ -57,7 +58,8 @@ export default function TryIt({ config }) {
     setRun(null);
     if (useSaved) {
       const rows = chosenSamples.flatMap((s) => s.saved).sort((a, b) => a.rank - b.rank).map((r, i) => ({ ...r, rank: i + 1 }));
-      setRun({ title: "Saved results from a real AI run", rows, problems: [] });
+      const whole = sample === ALL;
+      setRun({ title: "Saved results from a real AI run", rows, problems: [], postFirst: whole ? savedExtras.post_first : [], montages: whole ? savedExtras.montages : [] });
       return;
     }
     const rows = [];
@@ -90,7 +92,18 @@ export default function TryIt({ config }) {
       }
       if (isLive) rows.sort((a, b) => b.rank_score - a.rank_score);
       rows.forEach((r, i) => { r.rank = i + 1; r.key = `${r.episode}-${i}`; });
-      setRun({ title: isLive ? "Live AI run" : "Keyword-only picks, not AI judgment", rows, problems });
+      let extras = { post_first: [], montages: [] };
+      if (isLive && rows.length >= 2) {
+        setProgress({ done: parsed.length, total: parsed.length, label: "Choosing what to post first, and joining moments" });
+        try {
+          extras = await postJson("/api/finish", { scripts: parsed.map((p) => p.script), rows, ...(ownKey ? { base_url: own.base_url, api_key: own.api_key, model: own.model } : {}) });
+          problems.push(...extras.problems);
+          if (extras.montages_dropped) problems.push(`${extras.montages_dropped} proposed montage(s) failed a code check and were dropped.`);
+        } catch (e) {
+          problems.push(`The top 10 order and montages weren't created: ${e.message}`);
+        }
+      }
+      setRun({ title: isLive ? "Live AI run" : "Keyword-only picks, not AI judgment", rows, problems, postFirst: extras.post_first, montages: extras.montages });
     } finally {
       setProgress(null);
     }
@@ -103,7 +116,7 @@ export default function TryIt({ config }) {
       <div className="page-head">
         <div>
           <h1>Try it</h1>
-          <p className="lede">Choose an input and press Find promos. No login needed. This page runs steps 1-7 of the pipeline. The top 10 order and montages come from the full-show command, <code>run_show.py</code>.</p>
+          <p className="lede">Choose an input and press Find promos. No login needed. A live run goes through every AI and code step, then an editor makes the final call.</p>
         </div>
       </div>
 
@@ -182,6 +195,19 @@ export default function TryIt({ config }) {
             {run.rows.length > 0 && <SheetButton rows={run.rows} filename="promo_editor_sheet.csv" label="Download editor sheet (CSV)" />}
           </div>
           {run.problems.map((p, i) => <div className="notice warn" key={i}>{p}</div>)}
+          {run.postFirst?.length > 0 && (
+            <>
+              <h2>Post these first</h2>
+              {run.postFirst.map((p) => <PromoCard key={`first-${p.key}`} promo={p} heading={`${p.slot}. `} />)}
+            </>
+          )}
+          {run.montages?.length > 0 && (
+            <>
+              <h2>Montages across episodes</h2>
+              {run.montages.map((m, i) => <Montage key={i} montage={m} />)}
+            </>
+          )}
+          {(run.postFirst?.length > 0 || run.montages?.length > 0) && <h2>All promos by score</h2>}
           {run.rows.map((r) => (
             <PromoCard key={r.key} promo={r} heading={r.rank_score !== undefined ? `#${r.rank} · score ${r.rank_score} · ` : `${r.rank}. `} />
           ))}

@@ -10,7 +10,7 @@ export function SampleNotice({ results }) {
   );
 }
 
-export default function Overview({ results, go }) {
+export default function Overview({ results, stats, go }) {
   return (
     <>
       <h1>Promo Finder</h1>
@@ -36,13 +36,13 @@ export default function Overview({ results, go }) {
       <h2>Results on Kuku's input pack</h2>
       <table className="numbers">
         <tbody>
-          <tr><td>50</td><td>episodes read</td></tr>
-          <tr><td>78</td><td>promos found</td></tr>
-          <tr><td>3</td><td>episodes left empty on purpose</td></tr>
-          <tr><td>3</td><td>montages across episodes</td></tr>
+          <tr><td>{stats.episodes}</td><td>episodes read</td></tr>
+          <tr><td>{stats.promos}</td><td>promos found</td></tr>
+          <tr><td>{stats.empty_episodes}</td><td>episodes left empty on purpose</td></tr>
+          <tr><td>{stats.montages}</td><td>montages across episodes</td></tr>
         </tbody>
       </table>
-      <p>All 78 pass the code checks against the script. No editor has reviewed them yet. The Quality tab shows where the tool picks badly.</p>
+      <p>All {stats.passed_checks} pass the code checks against the script. No editor has reviewed them yet. The Quality tab shows where the tool picks badly.</p>
 
       <h2>What's AI and what's code</h2>
       <div className="grid two">

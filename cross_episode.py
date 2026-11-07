@@ -7,7 +7,7 @@ last). As with single-episode promos, the model only names element IDs; code
 resolves them to timestamps and verbatim quotes, then validate.py checks them.
 
   python cross_episode.py build     # build montages from MONTAGE_SPECS, if you've added any -> outputs/cross_episode_promos.json
-  python cross_episode.py propose   # ask Claude to propose montages from the ranked pool (needs an API key)
+  python cross_episode.py propose   # ask the model to propose montages from the ranked pool (needs an API key)
 """
 import json
 import os
@@ -38,16 +38,17 @@ def load(ep_prefix: str):
     return _cache[ep_prefix]
 
 
-def build_montage(spec: dict) -> dict:
+def build_montage(spec: dict, lookup=None) -> dict:
+    lookup = lookup or load
     segments = []
     for ep_prefix, a, b in spec["segments"]:
-        fname, ep, els = load(ep_prefix)
+        fname, ep, els = lookup(ep_prefix)
         segments.append({"episode": ep["episode_number"], "source_file": fname,
                          "start": els[a]["start"], "end": els[b]["end"],
                          "start_s": els[a]["start_s"], "end_s": els[b]["end_s"]})
 
     def quote(ref):
-        _, ep, els = load(ref[0])
+        _, ep, els = lookup(ref[0])
         e = els[ref[1]]
         return {"episode": ep["episode_number"], "quote": e["text"], "timestamp": e["start"], "element": e["id"]}
 
@@ -94,10 +95,14 @@ def propose(top_n: int = 15, model: str = DEFAULT_MODEL):
 
 def propose_measured(top_n: int, model: str):
     ranked = json.loads(Path("outputs/ranked_promos.json").read_text(encoding="utf-8"))["ranked_promos"][:top_n]
+    return propose_from([(r, r["source_file"].split("-")[1]) for r in ranked], load, model)
+
+
+def propose_from(ranked: list, lookup, model: str):
+    """ranked is a list of (promo row, episode prefix); lookup finds an episode by prefix."""
     blocks = []
-    for r in ranked:
-        prefix = r["source_file"].split("-")[1]
-        _, ep, els = load(prefix)
+    for r, prefix in ranked:
+        _, ep, els = lookup(prefix)
         lo = r["segments"][0]["start_s"] - 10
         hi = r["segments"][-1]["end_s"] + 10
         lines = [f"{e['id']} [{fmt_ts(e['start_s'])}-{fmt_ts(e['end_s'])}] {label(e)}: {e['text']}"

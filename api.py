@@ -22,11 +22,14 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
 import llm_client
+from cross_episode import DEFAULT_MODEL as MONTAGE_MODEL, build_montage, propose_from
 from editor_sheet import to_csv
+from global_rank import MODEL as RANK_MODEL, Order, build_prompt
 from heuristics import generate_windows
 from parser import parse_episode
 from rank import score as rank_score
-from validate import check_promo, elements as validation_elements
+from transcript import indexed_elements
+from validate import check_montage, check_promo, elements as validation_elements
 
 BASE = Path(__file__).parent
 REAL_OUT = BASE / "outputs"
@@ -54,6 +57,14 @@ class JudgeRequest(Script):
     api_key: str = Field(default="", max_length=500)
     model: str = Field(default="", max_length=200)
     critic_model: str = Field(default="", max_length=200)
+
+
+class FinishRequest(BaseModel):
+    scripts: list[Script] = Field(max_length=60)
+    rows: list[dict] = Field(max_length=300)
+    base_url: str = Field(default="", max_length=500)
+    api_key: str = Field(default="", max_length=500)
+    model: str = Field(default="", max_length=200)
 
 
 class SheetRequest(BaseModel):
@@ -190,12 +201,18 @@ def results():
 
 @app.get("/api/samples")
 def samples():
-    saved = read_json(DEMO_OUT / "ranked_promos.json") or {"ranked_promos": []}
+    saved = read_json(DEMO_OUT / "ranked_promos.json") or {"ranked_promos": [], "post_first": []}
     out = []
     for f in sorted(SAMPLES.glob("*.txt")):
         rows = [r for r in saved["ranked_promos"] if Path(r["source_file"]).stem == f.stem]
         out.append({"name": f.name, "text": f.read_text(encoding="utf-8"), "saved": rows})
-    return out
+    montages = read_json(DEMO_OUT / "cross_episode_promos.json") or {"montages": []}
+    return {"samples": out, "post_first": saved["post_first"], "montages": montages["montages"]}
+
+
+@app.get("/api/stats")
+def stats():
+    return read_json(BASE / "input_pack_stats.json") or {}
 
 
 @app.post("/api/parse")
@@ -235,6 +252,69 @@ def judge(req: JudgeRequest, request: Request):
             row["rank_score"] = rank_score(row)
         rows.append(row)
     return {"episode": episode["episode_number"], "promos": rows, "empty_reason": result.get("no_good_promo_reason"), "live": live}
+
+
+def order_promos(rows: list[dict], model: str) -> list[dict]:
+    """Step 8: compares the top 15 side by side and returns the top 10, with a reason per slot."""
+    shortlist = sorted(rows, key=lambda r: -r["rank_score"])[:15]
+    by_key = {r["key"]: r for r in shortlist}
+    order = llm_client.complete(Order, build_prompt(shortlist), model)
+    picked, seen = [], set()
+    for s in order.slots[:10]:
+        if s.key in by_key and s.key not in seen:  # ignores any key the model made up or repeated
+            seen.add(s.key)
+            picked.append({**by_key[s.key], "slot": len(picked) + 1, "reason": s.reason})
+    return picked
+
+
+def live_montages(rows: list[dict], episodes: list[dict], model: str) -> tuple[list[dict], int]:
+    """Step 9: the model names line IDs, code builds each montage and drops any that fail a check."""
+    known = {}
+    prefix_of = {}
+    for i, e in enumerate(episodes, 1):
+        prefix = f"{i:03d}"
+        prefix_of[e["episode_number"]] = prefix
+        known[prefix] = (prefix, e, {x["id"]: x for x in indexed_elements(e)})
+    shortlist = sorted((r for r in rows if r["episode"] in prefix_of), key=lambda r: -r["rank_score"])[:15]
+    specs, _ = propose_from([(r, prefix_of[r["episode"]]) for r in shortlist], known.__getitem__, model)
+    cache = {prefix: (e, validation_elements(e)) for prefix, (_, e, _els) in known.items()}
+    kept, dropped = [], 0
+    for spec in specs:
+        try:
+            m = build_montage(spec, known.__getitem__)
+            if check_montage(m, cache)["status"] == "error":
+                dropped += 1
+                continue
+            kept.append(m)
+        except (KeyError, IndexError):  # the model named a line or episode that doesn't exist
+            dropped += 1
+    return kept, dropped
+
+
+@app.post("/api/finish")
+def finish(req: FinishRequest, request: Request):
+    """Runs the last two AI steps on a finished list of promos. Each can fail without losing the other."""
+    own_key = bool(req.api_key)
+    if not own_key and not has_server_key():
+        raise HTTPException(400, "These steps need an AI key.")
+    if not own_key and not within_shared_limit(visitor_of(request)):
+        raise HTTPException(429, "You've reached this site's hourly limit for the free AI key. "
+                                 "Try again later, or add your own key under Use your own model.")
+    if own_key:
+        llm_client.use_session(req.base_url, req.api_key)
+    out = {"post_first": [], "montages": [], "montages_dropped": 0, "problems": []}
+    try:
+        if len(req.rows) >= 2:
+            out["post_first"] = order_promos(req.rows, req.model or RANK_MODEL)
+    except Exception as e:  # noqa: BLE001
+        out["problems"].append(f"The top 10 order wasn't created: {llm_client.friendly_error(e)}")
+    try:
+        episodes = [parse_script(s.name, s.text) for s in req.scripts]
+        if len(episodes) >= 2 and len({r["episode"] for r in req.rows}) >= 2:
+            out["montages"], out["montages_dropped"] = live_montages(req.rows, episodes, req.model or MONTAGE_MODEL)
+    except Exception as e:  # noqa: BLE001
+        out["problems"].append(f"Montages weren't created: {llm_client.friendly_error(e)}")
+    return out
 
 
 @app.post("/api/sheet")

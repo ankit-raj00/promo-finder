@@ -23,12 +23,14 @@ export default function App() {
   const [tab, setTab] = useState(tabFromHash);
   const [results, setResults] = useState(null);
   const [config, setConfig] = useState(null);
+  const [stats, setStats] = useState(null);
   const [loadError, setLoadError] = useState(false);
 
   useEffect(() => {
-    Promise.all([fetch("/api/results"), fetch("/api/config")])
-      .then(async ([r, c]) => {
-        if (!r.ok || !c.ok) throw new Error("bad response");
+    Promise.all([fetch("/api/results"), fetch("/api/config"), fetch("/api/stats")])
+      .then(async ([r, c, s]) => {
+        if (!r.ok || !c.ok || !s.ok) throw new Error("bad response");
+        setStats(await s.json());
         setResults(await r.json());
         setConfig(await c.json());
       })
@@ -62,14 +64,14 @@ export default function App() {
       <main className="wrap main">
         {loadError && <div className="notice error">The site couldn't load its data. Please refresh the page.</div>}
         {!loadError && !results && <p className="muted" role="status">Loading...</p>}
-        {results && config && (
+        {results && config && stats && (
           <>
-            {tab === "overview" && <Overview results={results} go={go} />}
+            {tab === "overview" && <Overview results={results} stats={stats} go={go} />}
             {tab === "post-first" && <PostFirst results={results} />}
             {tab === "all" && <AllPromos results={results} />}
             {tab === "try" && <TryIt config={config} />}
-            {tab === "how" && <Pipeline />}
-            {tab === "quality" && <Quality results={results} />}
+            {tab === "how" && <Pipeline stats={stats} />}
+            {tab === "quality" && <Quality results={results} stats={stats} />}
           </>
         )}
       </main>

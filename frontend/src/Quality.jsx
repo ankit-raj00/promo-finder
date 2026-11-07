@@ -2,7 +2,7 @@ import React from "react";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
-export default function Quality({ results }) {
+export default function Quality({ results, stats: s }) {
   return (
     <>
       <div className="page-head">
@@ -16,9 +16,9 @@ export default function Quality({ results }) {
 
       <h2>What I checked</h2>
       <div className="grid three">
-        <div className="card"><p className="big">78 of 78</p><h3>Pass the rules</h3><p>Every promo passes every check against the script. It took work: 32 of 50 episodes needed a retry, and 4 picks were dropped.</p></div>
-        <div className="card"><p className="big">50 of 50</p><h3>Agree on pick or skip</h3><p>An earlier run, judged separately by Claude, made the same pick-or-skip choice, with a time overlap of 0.68. Both are AI, so this shows agreement, not that the picks are right.</p></div>
-        <div className="card"><p className="big">0.685</p><h3>Consistency out of 1</h3><p>Two runs of the judge on the test episodes. The moments are often similar, but the start and end points move.</p></div>
+        <div className="card"><p className="big">{s.passed_checks} of {s.promos}</p><h3>Pass the rules</h3><p>Every promo passes every check against the script. It took work: {s.episodes_with_retry} of {s.episodes} episodes needed a retry, and {s.picks_dropped} picks were dropped.</p></div>
+        <div className="card"><p className="big">{s.pick_or_skip_agreement} of {s.episodes}</p><h3>Agree on pick or skip</h3><p>An earlier run, judged separately by a Claude model, made the same pick-or-skip choice, with a time overlap of {s.mean_time_overlap}. Both are AI, so this shows agreement, not that the picks are right.</p></div>
+        <div className="card"><p className="big">{s.consistency}</p><h3>Consistency out of 1</h3><p>Two runs of the judge on the test episodes. The moments are often similar, but the start and end points move.</p></div>
       </div>
 
       <h2>Where it picks badly</h2>
@@ -26,12 +26,12 @@ export default function Quality({ results }) {
         <table>
           <thead><tr><th>Problem</th><th>How much</th><th>What it means</th></tr></thead>
           <tbody>
-            <tr><td>Weak hooks</td><td>9 of 78 scored 2 or lower</td><td>The opening may not stop a stranger, so an editor should check these first</td></tr>
-            <tr><td>Needs backstory</td><td>18 of 78 scored 3 or lower</td><td>The clip may confuse someone new to the show</td></tr>
-            <tr><td>Overlapping clips</td><td>7 same-episode pairs</td><td>Post only one from each pair</td></tr>
-            <tr><td>Spoiler check flags too much</td><td>12 high and 48 low</td><td>Treat it as a prompt for an editor, not a verdict</td></tr>
+            <tr><td>Weak hooks</td><td>{s.weak_hooks} of {s.promos} scored 2 or lower</td><td>The opening may not stop a stranger, so an editor should check these first</td></tr>
+            <tr><td>Needs backstory</td><td>{s.need_backstory} of {s.promos} scored 3 or lower</td><td>The clip may confuse someone new to the show</td></tr>
+            <tr><td>Overlapping clips</td><td>{s.same_episode_overlaps} same-episode pairs</td><td>Post only one from each pair</td></tr>
+            <tr><td>Spoiler check flags too much</td><td>{s.spoiler_high} high and {s.spoiler_low} low</td><td>Treat it as a prompt for an editor, not a verdict</td></tr>
             <tr><td>Missed moments</td><td>At least 1</td><td>It didn't pick a scene the earlier run ranked first, so strong moments can be skipped</td></tr>
-            <tr><td>Slightly long clip</td><td>1 clip at 60.25s</td><td>The check allows half a second of slack for script timing, so it needs a small trim</td></tr>
+            <tr><td>Slightly long clip</td><td>{s.clips_over_60s} clip at {s.longest_clip_s}s</td><td>The check allows half a second of slack for script timing, so it needs a small trim</td></tr>
             <tr><td>Re-runs differ</td><td>See consistency above</td><td>Some start and end points change between runs</td></tr>
             <tr><td>Text only</td><td>Every clip</td><td>It can't judge acting, music or pacing</td></tr>
           </tbody>

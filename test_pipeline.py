@@ -187,9 +187,50 @@ def test_public_copy_never_serves_real_results():
 
 
 def test_samples_include_saved_ai_results():
-    samples = _site().get("/api/samples").json()
+    out = _site().get("/api/samples").json()
+    samples = out["samples"]
     assert len(samples) == 3 and sum(len(s["saved"]) for s in samples) == 5
-    assert all(s["text"] for s in samples)
+    assert all(s["text"] for s in samples) and out["post_first"]
+
+
+def test_stats_are_counts_only_with_no_script_text():
+    stats = _site().get("/api/stats").json()
+    assert stats["promos"] == 78 and all(isinstance(v, (int, float)) for v in stats.values())
+
+
+def test_live_steps_keep_only_valid_order_and_montages():
+    import api
+
+    site = _site()
+    e1, e2 = api.parse_script(*_demo_script(1).values()), api.parse_script(*_demo_script(2).values())
+    els1, els2 = indexed_elements(e1), indexed_elements(e2)
+    rows = [{"key": "a", "episode": e1["episode_number"], "total_length_s": 30.0, "rank_score": 4.0, "hook_strength": 4,
+             "cliffhanger_strength": 4, "standalone_score": 4, "spoiler_risk": "none", "platform_risk": "none", "hook_quote": "h",
+             "cliffhanger_quote": "c", "why_it_works": "w", "segments": [{"start_s": els1[3]["start_s"], "end_s": els1[8]["end_s"]}]},
+            {"key": "b", "episode": e2["episode_number"], "total_length_s": 30.0, "rank_score": 3.0, "hook_strength": 3,
+             "cliffhanger_strength": 3, "standalone_score": 3, "spoiler_risk": "none", "platform_risk": "none", "hook_quote": "h",
+             "cliffhanger_quote": "c", "why_it_works": "w", "segments": [{"start_s": els2[3]["start_s"], "end_s": els2[8]["end_s"]}]}]
+    good = api.Order.model_validate({"slots": [{"key": "b", "reason": "first"}, {"key": "made-up", "reason": "x"}, {"key": "a", "reason": "second"}]})
+
+    def spec(ok):
+        from cross_episode import Proposal, Proposals
+        first, last = els1[0]["id"], els1[-1]["id"]
+        end = els2[-1]["id"]
+        return Proposal(title="m", segments=[{"episode_prefix": "001", "start_element": first, "end_element": els1[6]["id"] if ok else last},
+                                             {"episode_prefix": "002", "start_element": els2[0]["id"], "end_element": els2[6]["id"] if ok else end}],
+                        hook_element=first, cliffhanger_element=els2[6]["id"] if ok else end, why_it_works="w", spoiler_risk="none", note="")
+
+    real = llm_client.complete, llm_client.complete_measured
+    llm_client.complete = lambda schema, prompt, model: good
+    from cross_episode import Proposals
+    llm_client.complete_measured = lambda schema, prompt, model: (Proposals(montages=[spec(False), spec(True)]), {})
+    try:
+        body = {"scripts": [_demo_script(1), _demo_script(2)], "rows": rows, "api_key": "k", "base_url": "http://127.0.0.1:9/v1", "model": "m"}
+        out = site.post("/api/finish", json=body).json()
+    finally:
+        llm_client.complete, llm_client.complete_measured = real
+    assert [p["key"] for p in out["post_first"]] == ["b", "a"] and out["post_first"][1]["slot"] == 2
+    assert out["montages_dropped"] == 1 and len(out["montages"]) <= 1 and not out["problems"]
 
 
 def test_script_runs_without_a_key_as_labelled_keyword_picks():

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-const STEPS = {
+const buildSteps = (s) => ({
   read: { kind: "code", n: 1, title: "Read the script", short: "Scenes and timed lines", file: "parser.py",
     what: "Turns each screenplay file into scenes and lines, with a start and end time for every line.",
     why: "Scripts are regular enough that rules handle this exactly and for free. A model could only add mistakes.",
@@ -15,11 +15,11 @@ const STEPS = {
     out: "Line IDs for each clip's start, end, hook and cliffhanger. Code turns them into exact times and words." },
   check: { kind: "code", n: 4, title: "Check every pick", short: "Rules against the script", file: "validate.py",
     what: "Is it 20-60 seconds? Is the hook in the first 3 seconds, and the cliffhanger at the cut? Do the quotes match the script?",
-    why: "These rules have a right answer, so code checks them every time. On the 50-episode run, 32 episodes needed at least one retry, and 4 picks were dropped.",
+    why: `These rules have a right answer, so code checks them every time. On the 50-episode run, ${s.episodes_with_retry} episodes needed at least one retry, and ${s.picks_dropped} picks were dropped.`,
     out: "A pass, or the exact error to send back to the model." },
   critic: { kind: "ai", n: 5, title: "Get a second opinion", short: "The critic", file: "critic.py",
     what: "A separate step sees only the clip's text, like a stranger would, and scores the hook, the cliffhanger and whether it makes sense alone.",
-    why: "The judge rated 77 of its own 78 hooks 4 or 5 out of 5, so its ratings can't rank anything. The critic's hook scores spread from 2 to 5.",
+    why: `The judge rated ${s.self_rated_hook_4_or_5} of its own ${s.promos} hooks 4 or 5 out of 5, so its ratings can't rank anything. The critic's hook scores spread from ${s.critic_hook_min} to ${s.critic_hook_max}.`,
     out: "Scores from 1 to 5, which replace the judge's own ratings." },
   spoiler: { kind: "ai", n: 6, title: "Check for spoilers", short: "Does it give away a twist?", file: "spoiler_check.py",
     what: "Given a summary of every episode, the model flags clips that reveal a late twist.",
@@ -41,7 +41,7 @@ const STEPS = {
     what: "An editor works from the exported sheet, approves or changes the picks, and cuts the footage.",
     why: "The tool reads text, so it can't judge acting, music or pacing. It removes \"watch every episode\", not the editor. Rejected picks become new test cases.",
     out: "Promos ready to post." },
-};
+});
 
 const KIND = { code: "Code", ai: "AI", person: "Person" };
 
@@ -53,8 +53,8 @@ const MODELS = [
   ["Montages", "Gemini 3.8 Flash Low", "3 runs of 3 montages", "9 of 9 valid; two other models failed"],
 ];
 
-function Node({ id, selected, onSelect }) {
-  const s = STEPS[id];
+function Node({ steps, id, selected, onSelect }) {
+  const s = steps[id];
   return (
     <button className={`node node-${s.kind}${selected === id ? " selected" : ""}`} aria-pressed={selected === id} onClick={() => onSelect(id)}>
       <span className="node-n">{s.n}</span>
@@ -66,8 +66,8 @@ function Node({ id, selected, onSelect }) {
 
 const Arrow = () => <div className="arrow" aria-hidden="true" />;
 
-function Detail({ id }) {
-  const s = STEPS[id];
+function Detail({ steps, id }) {
+  const s = steps[id];
   return (
     <div className="card detail" aria-live="polite">
       <span className={`tag tag-${s.kind}`}>{KIND[s.kind]}</span>
@@ -80,7 +80,8 @@ function Detail({ id }) {
   );
 }
 
-export default function Pipeline() {
+export default function Pipeline({ stats }) {
+  const steps = buildSteps(stats);
   const [selected, setSelected] = useState("judge");
   const select = (id) => {
     setSelected(id);
@@ -89,7 +90,7 @@ export default function Pipeline() {
       requestAnimationFrame(() => document.querySelector(".detail")?.scrollIntoView({ behavior: "smooth", block: "nearest" }));
     }
   };
-  const node = (id) => <Node id={id} selected={selected} onSelect={select} />;
+  const node = (id) => <Node steps={steps} id={id} selected={selected} onSelect={select} />;
   return (
     <>
       <div className="page-head">
@@ -138,7 +139,7 @@ export default function Pipeline() {
           <Arrow />
           <div className="endpoint end">Promos posted</div>
         </div>
-        <div className="detail-col"><Detail id={selected} /></div>
+        <div className="detail-col"><Detail steps={steps} id={selected} /></div>
       </div>
 
       <h2>Why the AI can't invent a quote</h2>
@@ -158,7 +159,7 @@ export default function Pipeline() {
         </table>
       </div>
       <p className="muted small">
-        Quality in the judge's final round, and the test labels for the critic and spoiler check, came from Claude, not a person, so that evidence is weaker. New runs use Flash Low for the critic too, because the winner hit long rate limits. This site's live runs use the free Gemini Flash Lite for speed, a model outside this comparison.
+        A Claude model served as the LLM judge for the judge's final round and supplied the test labels for the critic and spoiler check, not a person, so that evidence is weaker. New runs use Flash Low for the critic too, because the winner hit long rate limits. This site's live runs use the free Gemini Flash Lite for speed, a model outside this comparison.
       </p>
 
       <h2>Scale and cost</h2>

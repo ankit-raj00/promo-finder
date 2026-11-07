@@ -63,7 +63,7 @@ The rule behind the design: **AI makes the judgment calls, and code does anythin
 | 9. Montages | AI + code | `cross_episode.py` | Joins moments across episodes, and code drops invalid ones |
 | 10. Decide | Person | `editor_sheet.py` | An editor approves the picks from the exported sheet and cuts the footage |
 
-`run_show.py` runs steps 1-9 on a whole show. The site's **Try it** tab runs steps 1-7, so it gives a ranked list without the top 10 order or montages.
+A live run on the site's **Try it** tab goes through steps 1-9, the same as `run_show.py` on a whole show. The site's headline numbers come from `input_pack_stats.json`, which `build_stats.py` computes from the result files.
 
 Why some of these choices were made:
 
