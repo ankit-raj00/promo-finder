@@ -69,7 +69,8 @@ export default function App() {
             {tab === "overview" && <Overview results={results} stats={stats} go={go} />}
             {tab === "post-first" && <PostFirst results={results} />}
             {tab === "all" && <AllPromos results={results} />}
-            {tab === "try" && <TryIt config={config} />}
+            {/* Stays mounted so typed settings and results survive switching tabs. */}
+            <div hidden={tab !== "try"}><TryIt config={config} /></div>
             {tab === "how" && <Pipeline stats={stats} />}
             {tab === "quality" && <Quality results={results} stats={stats} />}
           </>
