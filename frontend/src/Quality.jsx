@@ -7,7 +7,7 @@ export default function Quality({ results }) {
     <>
       <div className="page-head">
         <div>
-          <h1>Quality: how I checked it, and where it fails</h1>
+          <h1>Quality</h1>
           <p className="lede">These numbers come from the run on all 50 episodes of Kuku's input pack.</p>
         </div>
       </div>

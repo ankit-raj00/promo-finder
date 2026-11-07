@@ -47,9 +47,7 @@ export default function App() {
     <>
       <header className="topbar">
         <div className="wrap topbar-inner">
-          <a className="brand" href="#overview">
-            <span className="brand-mark" aria-hidden="true">▶</span> Promo Finder
-          </a>
+          <a className="brand" href="#overview">Promo Finder</a>
           <a className="repo-link" href="https://github.com/ankit-raj00/promo-finder">Code on GitHub</a>
         </div>
         <nav className="wrap tabs" role="tablist" aria-label="Sections">

@@ -100,9 +100,9 @@ export default function Pipeline() {
       </div>
 
       <div className="legend" aria-label="Legend">
-        <span><i className="dot dot-code" /> Code: exact and free</span>
-        <span><i className="dot dot-ai" /> AI: judgment calls</span>
-        <span><i className="dot dot-person" /> Person: final decision</span>
+        <span><i className="dot dot-code" />Code</span>
+        <span><i className="dot dot-ai" />AI</span>
+        <span><i className="dot dot-person" />Person</span>
       </div>
 
       <div className="flow-layout">
@@ -114,7 +114,7 @@ export default function Pipeline() {
           {node("hints")}
           <Arrow />
           <div className="loop">
-            <p className="loop-label">↺ If a pick fails, the errors go back to the AI, up to 2 times. After that, it's dropped.</p>
+            <p className="loop-label">Retry: if a pick fails, the errors go back to the AI, up to 2 times. After that, it's dropped.</p>
             {node("judge")}
             <Arrow />
             {node("check")}
@@ -141,7 +141,7 @@ export default function Pipeline() {
         <div className="detail-col"><Detail id={selected} /></div>
       </div>
 
-      <h2>The key trick: the AI can't invent a quote</h2>
+      <h2>Why the AI can't invent a quote</h2>
       <p>The model never writes a timestamp or a line of dialogue. It sees numbered lines and answers with the numbers, and code looks up the rest.</p>
       <div className="grid two">
         <div className="card"><h4>What the model sees</h4><pre className="mono">e12 [00:17.00-00:19.00] JULIAN (O.S.) (Cold): Put it down.</pre></div>
