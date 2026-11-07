@@ -1,8 +1,8 @@
 """
 Runs the model comparison defined in EVAL_PLAN.md.
 
-  python eval_models.py <model> [<model> ...] [--episodes 001,006,...] [--runs 2]
-  python eval_models.py --blind <model_a> <model_b>     # makes the blind human review sheet
+  python -m evaluation.eval_models <model> [<model> ...] [--episodes 001,006,...] [--runs 2]
+  python -m evaluation.eval_models --blind <model_a> <model_b>     # makes the blind human review sheet
 
 Writes outputs/model_eval/<model>/run<N>/*.json (raw picks) and summary.{json,md}.
 Finished episodes are skipped, so a re-run resumes.
@@ -15,10 +15,10 @@ import time
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
-import llm_scorer as ls
-from agreement import iou, spans
-from heuristics import generate_windows
-from transcript import series_context
+from promo_finder.judge import scorer as ls
+from promo_finder.reports.agreement import iou, spans
+from promo_finder.ingest.heuristics import generate_windows
+from promo_finder.ingest.transcript import series_context
 
 PARSED, REF, OUT = Path("data/parsed"), Path("data/promos_final"), Path("outputs/model_eval")
 DEFAULT_EPISODES = "001,006,009,014,017,019,027,036,039,046"

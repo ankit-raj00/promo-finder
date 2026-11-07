@@ -2,8 +2,8 @@
 Compares models for the ordering and montage steps, following EVAL_PLAN.md.
 Run from a show's work folder, after rank.py:
 
-  python eval_steps.py ordering <model> [<model> ...]
-  python eval_steps.py montages <critic_model> <model> [<model> ...]
+  python -m evaluation.eval_steps ordering <model> [<model> ...]
+  python -m evaluation.eval_steps montages <critic_model> <model> [<model> ...]
 
 Writes outputs/step_eval/<step>/ (raw runs and summary.json). Finished runs are skipped.
 """
@@ -12,11 +12,11 @@ import sys
 from itertools import combinations
 from pathlib import Path
 
-import cross_episode as ce
-import global_rank as gr
-import llm_client
-from critic import score_clip
-from validate import validate_montages
+from promo_finder.rank import montages as ce
+from promo_finder.rank import post_first as gr
+from promo_finder.llm import client as llm_client
+from promo_finder.judge.critic import score_clip
+from promo_finder.judge.validate import validate_montages
 
 RUNS, TOP_N = 3, 15
 BASE = Path("outputs/step_eval")

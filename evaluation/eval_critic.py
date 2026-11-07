@@ -1,6 +1,6 @@
 """
 Compares models for the critic step, following EVAL_PLAN.md.
-  python eval_critic.py <model> [<model> ...]
+  python -m evaluation.eval_critic <model> [<model> ...]
 Writes outputs/step_eval/critic/ (test set, raw scores, summary). Finished calls are skipped.
 """
 import json
@@ -10,8 +10,8 @@ from concurrent.futures import ThreadPoolExecutor
 from itertools import combinations
 from pathlib import Path
 
-from critic import score_clip
-from transcript import fmt_ts, indexed_elements
+from promo_finder.judge.critic import score_clip
+from promo_finder.ingest.transcript import fmt_ts, indexed_elements
 
 OUT = Path("outputs/step_eval/critic")
 PARSED, REF = Path("data/parsed"), Path("data/promos_final")

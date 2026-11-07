@@ -4,7 +4,7 @@ the "post these first" order with a reason per slot. Scores from separate
 per-episode calls aren't on one scale; this pass is the calibration step.
 
 Run after rank.py (which builds the shortlist), then run rank.py again to attach the order.
-  python global_rank.py [shortlist_size]
+  python -m promo_finder.rank.post_first [shortlist_size]
 Needs model credentials (see llm_client.py). Writes editor_order into outputs/global_calibration.json.
 """
 import json
@@ -14,7 +14,7 @@ from pathlib import Path
 
 from pydantic import BaseModel, ConfigDict
 
-import llm_client
+from promo_finder.llm import client as llm_client
 
 RANKED = Path("outputs/ranked_promos.json")
 CALIBRATION = Path("outputs/global_calibration.json")
@@ -60,7 +60,7 @@ def main():
     calib["editor_order"] = [{"key": s.key, "reason": s.reason} for s in slots]
     calib["ordered_by"] = MODEL
     CALIBRATION.write_text(json.dumps(calib, indent=2), encoding="utf-8")
-    print(f"Ordered {len(slots)} slots -> {CALIBRATION}. Now re-run: python rank.py")
+    print(f"Ordered {len(slots)} slots -> {CALIBRATION}. Now re-run: python -m promo_finder.rank.ranker")
 
 
 if __name__ == "__main__":

@@ -2,7 +2,7 @@
 Inter-judge agreement: did an independent, blind second judge pick the same
 moments? Measured as temporal overlap (IoU) between promo time ranges.
 
-  python agreement.py data/promos_final data/promos_blind
+  python -m promo_finder.reports.agreement data/promos_final data/promos_blind
 """
 import json
 import sys

@@ -14,11 +14,11 @@ Checks per promo:
   - cliffhanger lands at the cut
 
 Usage:
-  python validate.py [promos_dir] [parsed_dir] [report_path]
-  python validate.py --repair <out_dir> [promos_dir] [parsed_dir]
+  python -m promo_finder.judge.validate [promos_dir] [parsed_dir] [report_path]
+  python -m promo_finder.judge.validate --repair <out_dir> [promos_dir] [parsed_dir]
       writes copies with quotes/timestamps snapped to the verbatim script line
       (raw judge output is left untouched, as the brief asks for unedited outputs)
-  python validate.py --montages outputs/cross_episode_promos.json [parsed_dir]
+  python -m promo_finder.judge.validate --montages outputs/cross_episode_promos.json [parsed_dir]
 Exit code 1 if any promo has an error.
 """
 import difflib
@@ -27,7 +27,7 @@ import re
 import sys
 from pathlib import Path
 
-from transcript import fmt_ts
+from promo_finder.ingest.transcript import fmt_ts
 
 MIN_LEN, MAX_LEN, LEN_TOL = 20.0, 60.0, 0.5
 HOOK_WINDOW_S = 3.0

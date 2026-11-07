@@ -1,7 +1,7 @@
 """
 Promo Finder web app: a small JSON API around the pipeline, plus the built React site.
 
-Run: python -m uvicorn api:app --port 8000     then open http://localhost:8000
+Run: python -m uvicorn web.api:app --port 8000     then open http://localhost:8000
 
 Judgment on a new episode uses a live model when a key is available, either on the
 server or sent with the request; otherwise a keyword-only fallback, clearly labelled.
@@ -21,21 +21,21 @@ from fastapi.responses import PlainTextResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
-import llm_client
-from cross_episode import DEFAULT_MODEL as MONTAGE_MODEL, build_montage, propose_from
-from editor_sheet import to_csv
-from global_rank import MODEL as RANK_MODEL, Order, build_prompt
-from heuristics import generate_windows
-from parser import parse_episode
-from rank import score as rank_score
-from transcript import indexed_elements
-from validate import check_montage, check_promo, elements as validation_elements
+from promo_finder.llm import client as llm_client
+from promo_finder.rank.montages import DEFAULT_MODEL as MONTAGE_MODEL, build_montage, propose_from
+from promo_finder.export.editor_sheet import to_csv
+from promo_finder.rank.post_first import MODEL as RANK_MODEL, Order, build_prompt
+from promo_finder.ingest.heuristics import generate_windows
+from promo_finder.ingest.parser import parse_episode
+from promo_finder.rank.ranker import score as rank_score
+from promo_finder.ingest.transcript import indexed_elements
+from promo_finder.judge.validate import check_montage, check_promo, elements as validation_elements
 
-BASE = Path(__file__).parent
+BASE = Path(__file__).resolve().parents[1]
 REAL_OUT = BASE / "outputs"
 DEMO_OUT = BASE / "demo" / "outputs"
 SAMPLES = BASE / "samples" / "demo_show"
-SITE = BASE / "frontend" / "dist"
+SITE = BASE / "web" / "frontend" / "dist"
 
 MAX_SCRIPT_CHARS = 1_000_000
 MAX_EPISODES_ON_SHARED_KEY = 5  # per run, enforced by the site
@@ -140,9 +140,9 @@ def keyword_only(episode: dict) -> dict:
 
 def judge_live(episode: dict, context: str, model: str | None, critic_model: str | None) -> dict:
     """Judge, then the independent critic and spoiler check. Same steps as the full pipeline."""
-    from critic import score_clip
-    from llm_scorer import score_episode
-    from spoiler_check import check_clip
+    from promo_finder.judge.critic import score_clip
+    from promo_finder.judge.scorer import score_episode
+    from promo_finder.judge.spoiler import check_clip
 
     result = score_episode(episode, {"candidates": generate_windows(episode)}, context, model=model, fallback_model=model)
     for p in result["promos"]:
@@ -212,7 +212,7 @@ def samples():
 
 @app.get("/api/stats")
 def stats():
-    return read_json(BASE / "input_pack_stats.json") or {}
+    return read_json(DEMO_OUT.parent / "input_pack_stats.json") or {}
 
 
 @app.post("/api/parse")
@@ -333,4 +333,4 @@ if SITE.exists():
 else:
     @app.get("/")
     def no_site():
-        return PlainTextResponse("The site isn't built yet. Run: cd frontend && npm install && npm run build")
+        return PlainTextResponse("The site isn't built yet. Run: cd web/frontend && npm install && npm run build")

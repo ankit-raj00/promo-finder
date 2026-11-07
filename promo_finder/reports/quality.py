@@ -1,6 +1,6 @@
 """
 Builds a show's quality report from files on disk; every number is computed, not typed in.
-Run from the project root:  python quality_report.py runs/<show_name>
+Run from the project root:  python -m promo_finder.reports.quality runs/<show_name>
 Compares against data/promos_final, the earlier output judged separately by Claude.
 """
 import glob
@@ -9,7 +9,7 @@ import sys
 from collections import Counter
 from pathlib import Path
 
-from agreement import iou, spans
+from promo_finder.reports.agreement import iou, spans
 
 W = Path(sys.argv[1] if len(sys.argv) > 1 else "runs/broken_soldier_flash_low")
 REF = Path("data/promos_final")

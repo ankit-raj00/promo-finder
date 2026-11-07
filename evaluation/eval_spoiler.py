@@ -1,6 +1,6 @@
 """
 Compares models for the spoiler check, following EVAL_PLAN.md. Run from the project root.
-  python eval_spoiler.py <model> [<model> ...]
+  python -m evaluation.eval_spoiler <model> [<model> ...]
 Writes outputs/step_eval/spoiler/. Finished calls are skipped.
 """
 import json
@@ -9,8 +9,8 @@ import sys
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
-from spoiler_check import check_clip
-from transcript import series_context
+from promo_finder.judge.spoiler import check_clip
+from promo_finder.ingest.transcript import series_context
 
 OUT = Path("outputs/step_eval/spoiler")
 PARSED, REF = Path("data/parsed"), Path("data/promos_final")

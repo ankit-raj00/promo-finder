@@ -2,7 +2,7 @@
 Separate spoiler check: given every episode logline and a clip, does the clip give away a twist?
 The judge's own spoiler ratings missed clear late-series payoffs.
 
-  python spoiler_check.py <promos_dir>     # adds a "spoiler_check" field to each promo, in place
+  python -m promo_finder.judge.spoiler <promos_dir>     # adds a "spoiler_check" field to each promo, in place
 Set PROMO_FINDER_SPOILER_MODEL to choose the model. Promos already checked are skipped.
 """
 import json
@@ -15,9 +15,9 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict
 
-import llm_client
-from critic import clip_text
-from transcript import series_context
+from promo_finder.llm import client as llm_client
+from promo_finder.judge.critic import clip_text
+from promo_finder.ingest.transcript import series_context
 
 MODEL = os.environ.get("PROMO_FINDER_SPOILER_MODEL") or os.environ.get("PROMO_FINDER_MODEL", "claude-opus-5-5")
 

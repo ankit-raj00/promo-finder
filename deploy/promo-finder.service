@@ -10,7 +10,7 @@ WorkingDirectory=/opt/promo-finder/app
 EnvironmentFile=/etc/promo-finder.env
 Environment=HOME=/var/lib/promo-finder
 StateDirectory=promo-finder
-ExecStart=/opt/promo-finder/venv/bin/python -m uvicorn api:app --host 127.0.0.1 --port 8000
+ExecStart=/opt/promo-finder/venv/bin/python -m uvicorn web.api:app --host 127.0.0.1 --port 8000
 Restart=always
 RestartSec=3
 MemoryMax=1500M

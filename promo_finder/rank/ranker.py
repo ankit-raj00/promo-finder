@@ -12,7 +12,7 @@ Two layers:
 Scores come from the promo itself (new llm_scorer.py output) or, for promos judged
 before those fields existed, from global_calibration.json.
 
-Usage: python rank.py [promos_dir] [out_json]
+Usage: python -m promo_finder.rank.ranker [promos_dir] [out_json]
 """
 import json
 import sys

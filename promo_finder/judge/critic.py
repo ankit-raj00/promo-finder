@@ -3,7 +3,7 @@ Independent critic: scores a clip from its script text alone, with no show conte
 without seeing the picking model's own ratings. The picker rates its own picks too
 generously to rank them; this is the separate, cold-viewer opinion.
 
-  python critic.py <promos_dir> <out_dir>
+  python -m promo_finder.judge.critic <promos_dir> <out_dir>
 Set PROMO_FINDER_CRITIC_MODEL to choose the model.
 """
 import json
@@ -16,8 +16,8 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, ValidationError
 
-import llm_client
-from transcript import indexed_elements, label
+from promo_finder.llm import client as llm_client
+from promo_finder.ingest.transcript import indexed_elements, label
 
 MODEL = os.environ.get("PROMO_FINDER_CRITIC_MODEL") or os.environ.get("PROMO_FINDER_MODEL", "claude-opus-5-5")
 Score = Literal[1, 2, 3, 4, 5]

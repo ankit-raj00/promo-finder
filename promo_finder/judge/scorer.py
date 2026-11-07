@@ -20,7 +20,7 @@ Config (env vars):
   PROMO_FINDER_EFFORT          default high
   PROMO_FINDER_CONCURRENCY     default 4
 
-Usage: python llm_scorer.py <parsed_dir> <candidates_dir> <out_dir>
+Usage: python -m promo_finder.judge.scorer <parsed_dir> <candidates_dir> <out_dir>
 """
 import json
 import os
@@ -32,9 +32,9 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, ValidationError
 
-import llm_client
-from transcript import indexed_elements, render, series_context
-from validate import check_promo, elements as validation_elements
+from promo_finder.llm import client as llm_client
+from promo_finder.ingest.transcript import indexed_elements, render, series_context
+from promo_finder.judge.validate import check_promo, elements as validation_elements
 
 MODEL = os.environ.get("PROMO_FINDER_MODEL", "claude-opus-5-5")
 FALLBACK_MODEL = os.environ.get("PROMO_FINDER_FALLBACK_MODEL", "claude-sonnet-5-5")

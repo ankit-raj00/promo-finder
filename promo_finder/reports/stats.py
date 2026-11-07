@@ -2,13 +2,13 @@
 Computes the numbers the website shows about the 50-episode run, from the result files.
 The output holds counts only, with no script text, so it's safe in the public repo.
 
-Run from the project root:  python build_stats.py    -> input_pack_stats.json
+Run from the project root:  python -m promo_finder.reports.stats    -> demo/input_pack_stats.json
 """
 import json
 from collections import Counter
 from pathlib import Path
 
-from agreement import iou, spans
+from promo_finder.reports.agreement import iou, spans
 
 OUT = Path("outputs")
 REF = Path("data/promos_final")  # the earlier run, used for comparison
@@ -69,7 +69,7 @@ def main():
         "clips_over_60s": len(too_long),
         "longest_clip_s": max(r["total_length_s"] for r in rows),
     }
-    Path("input_pack_stats.json").write_text(json.dumps(stats, indent=2) + "\n", encoding="utf-8")
+    Path("demo/input_pack_stats.json").write_text(json.dumps(stats, indent=2) + "\n", encoding="utf-8")
     print(json.dumps(stats, indent=2))
 
 

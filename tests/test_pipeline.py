@@ -1,6 +1,7 @@
 """
-Offline tests: no API key needed. Run: python test_pipeline.py  (or pytest)
+Offline tests: no API key needed. Run: python tests/test_pipeline.py  (or pytest)
 """
+import sys
 import csv
 import io
 import json
@@ -8,15 +9,18 @@ import os
 import types
 from pathlib import Path
 
-import llm_client
-import llm_scorer as ls
-from editor_sheet import to_csv
-from heuristics import generate_windows
-from parser import parse_episode
-from transcript import indexed_elements
-from validate import check_promo, elements
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
 
-SAMPLES = Path(__file__).parent / "samples" / "demo_show"
+from promo_finder.llm import client as llm_client
+from promo_finder.judge import scorer as ls
+from promo_finder.export.editor_sheet import to_csv
+from promo_finder.ingest.heuristics import generate_windows
+from promo_finder.ingest.parser import parse_episode
+from promo_finder.ingest.transcript import indexed_elements
+from promo_finder.judge.validate import check_promo, elements
+
+SAMPLES = ROOT / "samples" / "demo_show"
 llm_client.BASE_URL = ""  # the fake client below has the Anthropic shape, whatever this shell has set
 
 HOOK, CLIFF = "Put it down.", "Then you were the last person in this room."
@@ -163,7 +167,7 @@ def test_key_typed_in_the_app_reaches_anthropic_when_base_url_is_empty():
 def _site(demo_only=True):
     from fastapi.testclient import TestClient
 
-    import api
+    from web import api
 
     for name in ("PROMO_FINDER_API_KEY", "ANTHROPIC_API_KEY"):
         os.environ.pop(name, None)
@@ -181,7 +185,7 @@ def _demo_script(n=1):
 def test_public_copy_never_serves_real_results():
     site = _site(demo_only=True)
     out = site.get("/api/results").json()
-    demo = json.loads((Path(__file__).parent / "demo/outputs/ranked_promos.json").read_text(encoding="utf-8"))
+    demo = json.loads((ROOT / "demo/outputs/ranked_promos.json").read_text(encoding="utf-8"))
     assert out["is_sample"] and len(out["ranked"]) == demo["total_promos"]
     assert site.get("/api/config").json()["has_real_results"] is False
 
@@ -199,7 +203,7 @@ def test_stats_are_counts_only_with_no_script_text():
 
 
 def test_live_steps_keep_only_valid_order_and_montages():
-    import api
+    from web import api
 
     site = _site()
     e1, e2 = api.parse_script(*_demo_script(1).values()), api.parse_script(*_demo_script(2).values())
@@ -213,7 +217,7 @@ def test_live_steps_keep_only_valid_order_and_montages():
     good = api.Order.model_validate({"slots": [{"key": "b", "reason": "first"}, {"key": "made-up", "reason": "x"}, {"key": "a", "reason": "second"}]})
 
     def spec(ok):
-        from cross_episode import Proposal, Proposals
+        from promo_finder.rank.montages import Proposal, Proposals
         first, last = els1[0]["id"], els1[-1]["id"]
         end = els2[-1]["id"]
         return Proposal(title="m", segments=[{"episode_prefix": "001", "start_element": first, "end_element": els1[6]["id"] if ok else last},
@@ -222,7 +226,7 @@ def test_live_steps_keep_only_valid_order_and_montages():
 
     real = llm_client.complete, llm_client.complete_measured
     llm_client.complete = lambda schema, prompt, model: good
-    from cross_episode import Proposals
+    from promo_finder.rank.montages import Proposals
     llm_client.complete_measured = lambda schema, prompt, model: (Proposals(montages=[spec(False), spec(True)]), {})
     try:
         body = {"scripts": [_demo_script(1), _demo_script(2)], "rows": rows, "api_key": "k", "base_url": "http://127.0.0.1:9/v1", "model": "m"}
@@ -260,7 +264,7 @@ def test_sheet_downloads_as_csv():
 
 
 def test_shared_key_limit_is_per_visitor_and_resets():
-    import api
+    from web import api
 
     api._recent.clear()
     for _ in range(api.SHARED_KEY_EPISODES_PER_HOUR):

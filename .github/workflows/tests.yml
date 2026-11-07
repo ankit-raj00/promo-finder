@@ -9,5 +9,5 @@ jobs:
         with:
           python-version: "3.12"
       - run: pip install -r requirements.txt
-      - run: python test_pipeline.py
-      - run: cd frontend && npm ci && npm run build
+      - run: python tests/test_pipeline.py
+      - run: cd web/frontend && npm ci && npm run build

@@ -6,8 +6,8 @@ plus a hook element (in the first segment) and a cliffhanger element (in the
 last). As with single-episode promos, the model only names element IDs; code
 resolves them to timestamps and verbatim quotes, then validate.py checks them.
 
-  python cross_episode.py build     # build montages from MONTAGE_SPECS, if you've added any -> outputs/cross_episode_promos.json
-  python cross_episode.py propose   # ask the model to propose montages from the ranked pool (needs an API key)
+  python -m promo_finder.rank.montages build     # build montages from MONTAGE_SPECS, if you've added any -> outputs/cross_episode_promos.json
+  python -m promo_finder.rank.montages propose   # ask the model to propose montages from the ranked pool (needs an API key)
 """
 import json
 import os
@@ -17,9 +17,9 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict
 
-import llm_client
-from transcript import indexed_elements, label, fmt_ts
-from validate import validate_montages
+from promo_finder.llm import client as llm_client
+from promo_finder.ingest.transcript import indexed_elements, label, fmt_ts
+from promo_finder.judge.validate import validate_montages
 
 PARSED = Path("data/parsed")
 OUT = Path("outputs/cross_episode_promos.json")
@@ -147,7 +147,7 @@ def main():
     for m in montages:
         path = " + ".join(f"{s['episode'].replace('Episode ', 'E')} {s['start']}-{s['end']}" for s in m["segments"])
         print(f"{m['title']} ({m['total_length_s']}s): {path}")
-    print(f"-> {OUT}. Validate with: python validate.py --montages {OUT}")
+    print(f"-> {OUT}. Validate with: python -m promo_finder.judge.validate --montages {OUT}")
 
 
 if __name__ == "__main__":

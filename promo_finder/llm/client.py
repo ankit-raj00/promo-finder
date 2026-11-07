@@ -21,7 +21,7 @@ from pydantic import ValidationError
 
 def _load_dotenv():
     """Reads KEY=value lines from .env next to this file. Real environment variables win."""
-    path = Path(__file__).with_name(".env")
+    path = Path(__file__).resolve().parents[2] / ".env"
     if not path.exists():
         return
     for line in path.read_text(encoding="utf-8").splitlines():
@@ -50,6 +50,8 @@ def friendly_error(e: Exception) -> str:
     """Plain words for a visitor. Never includes the key, even if the provider's message does."""
     if getattr(e, "status_code", None) == 429:
         return "the AI limit is used up for now. Try again later, or add your own key in the sidebar."
+    if isinstance(e, ValidationError):
+        return "the model's answer wasn't in the expected format, even after retries. Try again, or use a stronger model."
     if getattr(e, "status_code", None) in (401, 403):
         return "the API key was rejected. Check the key and the Base URL."
     return f"{type(e).__name__}. Check the model name and Base URL, or try again."
@@ -132,13 +134,13 @@ def extract_json(text: str) -> str:
 
 
 def complete_measured(schema_cls, prompt: str, model: str):
-    """One-shot structured call for the ranking and montage steps, with one retry on a schema error.
+    """One-shot structured call for the ranking and montage steps, with up to two retries on a schema error.
     Returns (parsed, {"seconds", "output_tokens", "attempts"})."""
     client = get_client()
     system = [{"type": "text", "text": "Answer in the requested structure."}]
     messages = [{"role": "user", "content": prompt}]
     start, tokens = time.time(), 0
-    for attempt in (1, 2):
+    for attempt in (1, 2, 3):
         resp = create(client, model, system, messages, schema_cls)
         tokens += resp.usage.output_tokens or 0
         if resp.stop_reason != "end_turn":
@@ -147,11 +149,11 @@ def complete_measured(schema_cls, prompt: str, model: str):
         try:
             parsed = schema_cls.model_validate_json(extract_json(text))
             return parsed, {"seconds": round(time.time() - start, 2), "output_tokens": tokens, "attempts": attempt}
-        except ValidationError:
-            if attempt == 2:
+        except ValidationError as e:
+            if attempt == 3:
                 raise
             messages = messages + [{"role": "assistant", "content": resp.content},
-                                   {"role": "user", "content": "That didn't match the schema. Return only the corrected JSON."}]
+                                   {"role": "user", "content": f"That didn't match the schema: {str(e)[:500]}\nReturn only the corrected JSON."}]
 
 
 def complete(schema_cls, prompt: str, model: str):

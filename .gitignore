@@ -13,7 +13,7 @@
 solution_doc.pdf
 solution_doc.html
 
-frontend/node_modules/
+node_modules/
 __pycache__/
 .pytest_cache/
 *.pyc
