@@ -129,7 +129,7 @@ export default function TryIt({ config }) {
       {mode === "sample" && useSaved && <div className="notice"><b>No key needed.</b> These sample episodes have saved results from a real AI run, so they appear instantly.</div>}
       {mode !== "sample" && !live && <div className="notice warn"><b>No AI key is set, so these will be keyword-only picks, not AI judgment.</b> Add a key under Use your own model for the real pipeline.</div>}
       {!useSaved && sharedKey && (
-        <div className="notice"><b>Live AI is on, with no key needed.</b> It uses a free Gemini key, so it can run out for a while, and it takes about 20 seconds per episode. These models can pick differently from the 50-episode run. Your text goes to Google, which may use it to improve its products, so <b>don't paste confidential scripts</b>.</div>
+        <div className="notice"><b>Live AI is on, with no key needed.</b> It uses a free Gemini key, so it can run out for a while, and a run usually takes under a minute. These models can pick differently from the 50-episode run. Your text goes to Google, which may use it to improve its products, so <b>don't paste confidential scripts</b>.</div>
       )}
       {!useSaved && ownKey && <div className="notice"><b>Live AI is on,</b> using your key.</div>}
 
