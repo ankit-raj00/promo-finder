@@ -1,0 +1,23 @@
+[Unit]
+Description=Promo Finder Streamlit app
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=promo
+WorkingDirectory=/opt/promo-finder/app
+# Holds PROMO_FINDER_VIEW_PASSWORD. Root-only, and never in the repo.
+EnvironmentFile=/etc/promo-finder.env
+Environment=HOME=/var/lib/promo-finder
+StateDirectory=promo-finder
+ExecStart=/opt/promo-finder/venv/bin/streamlit run app.py --server.address 127.0.0.1 --server.port 8501
+Restart=always
+RestartSec=3
+MemoryMax=1500M
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,318 @@
+{
+  "total_promos": 5,
+  "post_first": [
+    {
+      "slot": 1,
+      "reason": "This clip features the strongest hook and introduces the central mystery directly without needing any prior context or spoiling future events.",
+      "key": "E1#0",
+      "episode": "Episode 1",
+      "source_file": "episode-001-demo.json",
+      "segments": [
+        {
+          "start": "00:13.00",
+          "end": "01:08.00",
+          "start_s": 13.0,
+          "end_s": 68.0
+        }
+      ],
+      "total_length_s": 55.0,
+      "hook_quote": "That's Mr. Vale's ring. He was buried with it.",
+      "hook_timestamp": "00:13.00",
+      "cliffhanger_quote": "Extreme close-up on Mara's eyes as the lights go out. Cut to black.",
+      "cliffhanger_timestamp": "01:05.00",
+      "why_it_works": "It encapsulates the pilot's central conflict with natural escalation, progressing smoothly from a chilling discovery to hush money and physical peril.",
+      "standalone_score": 4,
+      "confidence": "high",
+      "hook_strength": 4,
+      "cliffhanger_strength": 5,
+      "spoiler_risk": "none",
+      "platform_risk": "none",
+      "risk_note": "",
+      "viewer_question": "Who was buried in Mr. Vale's coffin, and what will Julian do to Mara now that the lights are out?",
+      "twist_revealed": "none",
+      "rank_score": 4.15,
+      "rank": 1
+    },
+    {
+      "slot": 2,
+      "reason": "It continues building intrigue around the death mystery while varying the beat with an escalating inquiry and a dramatic doorway cliffhanger.",
+      "key": "E2#0",
+      "episode": "Episode 2",
+      "source_file": "episode-002-demo.json",
+      "segments": [
+        {
+          "start": "00:10.00",
+          "end": "01:02.00",
+          "start_s": 10.0,
+          "end_s": 62.0
+        }
+      ],
+      "total_length_s": 52.0,
+      "hook_quote": "Please. A man died, or he didn't. I need to know which.",
+      "hook_timestamp": "00:10.00",
+      "cliffhanger_quote": "Mara turns as a black shadow fills the doorway. Freeze frame.",
+      "cliffhanger_timestamp": "00:59.00",
+      "why_it_works": "It builds escalating tension across 52 seconds, moving from an urgent inquiry into a shocking family secret, immediately followed by the arrival of the antagonist.",
+      "standalone_score": 4,
+      "confidence": "high",
+      "hook_strength": 3,
+      "cliffhanger_strength": 5,
+      "spoiler_risk": "low",
+      "platform_risk": "none",
+      "risk_note": "",
+      "viewer_question": "Who is Julian and what will he do to Mara now that she uncovered the truth?",
+      "twist_revealed": "Arthur Vale had a twin who may still be alive, and Mara's mother signed his death certificate.",
+      "rank_score": 3.64,
+      "rank": 4
+    },
+    {
+      "slot": 3,
+      "reason": "This provides a fast-paced escalation into high-stakes dealmaking before delivering a chilling car-trap twist with minimal spoiler impact.",
+      "key": "E3#0",
+      "episode": "Episode 3",
+      "source_file": "episode-003-demo.json",
+      "segments": [
+        {
+          "start": "00:19.00",
+          "end": "01:03.00",
+          "start_s": 19.0,
+          "end_s": 63.0
+        }
+      ],
+      "total_length_s": 44.0,
+      "hook_quote": "She'd never lie.",
+      "hook_timestamp": "00:19.00",
+      "cliffhanger_quote": "Mara's face in the dark glass. Cut to black.",
+      "cliffhanger_timestamp": "01:00.00",
+      "why_it_works": "It flows seamlessly from high-stakes exposition and dealmaking into a chilling twist ending where the doors lock and the antagonist is driving the car.",
+      "standalone_score": 4,
+      "confidence": "high",
+      "hook_strength": 3,
+      "cliffhanger_strength": 5,
+      "spoiler_risk": "low",
+      "platform_risk": "none",
+      "risk_note": "",
+      "viewer_question": "Who is driving the car, and will Mara and Julian escape?",
+      "twist_revealed": "Julian reveals his uncle is alive, and the supposed dead man is driving their car.",
+      "rank_score": 3.85,
+      "rank": 2
+    },
+    {
+      "slot": 4,
+      "reason": "Returning to Episode 1 offers a tight interrogation dynamic that reinforces the danger without placing similar pilot beats back-to-back.",
+      "key": "E1#1",
+      "episode": "Episode 1",
+      "source_file": "episode-001-demo.json",
+      "segments": [
+        {
+          "start": "00:22.00",
+          "end": "01:08.00",
+          "start_s": 22.0,
+          "end_s": 68.0
+        }
+      ],
+      "total_length_s": 46.0,
+      "hook_quote": "You didn't see anything tonight. Did you, Mara?",
+      "hook_timestamp": "00:22.00",
+      "cliffhanger_quote": "Extreme close-up on Mara's eyes as the lights go out. Cut to black.",
+      "cliffhanger_timestamp": "01:05.00",
+      "why_it_works": "A tighter cut focusing entirely on the high-tension interrogation and extortion dynamic, culminating in a sudden cliffhanger blackout.",
+      "standalone_score": 4,
+      "confidence": "high",
+      "hook_strength": 3,
+      "cliffhanger_strength": 4,
+      "spoiler_risk": "none",
+      "platform_risk": "none",
+      "risk_note": "",
+      "viewer_question": "Who was buried in the father's coffin, and what is Julian about to do to Mara?",
+      "twist_revealed": "none",
+      "rank_score": 3.77,
+      "rank": 3
+    },
+    {
+      "slot": 5,
+      "reason": "This longer cut works best as a deeper narrative hook once viewers are primed, maximizing emotional investment before the dark car reveal.",
+      "key": "E3#1",
+      "episode": "Episode 3",
+      "source_file": "episode-003-demo.json",
+      "segments": [
+        {
+          "start": "00:03.00",
+          "end": "01:03.00",
+          "start_s": 3.0,
+          "end_s": 63.0
+        }
+      ],
+      "total_length_s": 60.0,
+      "hook_quote": "Your mother was the finest doctor in this city.",
+      "hook_timestamp": "00:03.00",
+      "cliffhanger_quote": "Mara's face in the dark glass. Cut to black.",
+      "cliffhanger_timestamp": "01:00.00",
+      "why_it_works": "A full 60-second build that delivers complete context, emotional investment, high narrative tension, and a heart-stopping twist ending.",
+      "standalone_score": 4,
+      "confidence": "high",
+      "hook_strength": 3,
+      "cliffhanger_strength": 5,
+      "spoiler_risk": "low",
+      "platform_risk": "none",
+      "risk_note": "",
+      "viewer_question": "Is the driver Julian's supposedly dead uncle, and will Mara escape the car?",
+      "twist_revealed": "The dead man is revealed to still be alive.",
+      "rank_score": 3.4,
+      "rank": 5
+    }
+  ],
+  "episodes_with_no_good_promo": [],
+  "ranked_promos": [
+    {
+      "key": "E1#0",
+      "episode": "Episode 1",
+      "source_file": "episode-001-demo.json",
+      "segments": [
+        {
+          "start": "00:13.00",
+          "end": "01:08.00",
+          "start_s": 13.0,
+          "end_s": 68.0
+        }
+      ],
+      "total_length_s": 55.0,
+      "hook_quote": "That's Mr. Vale's ring. He was buried with it.",
+      "hook_timestamp": "00:13.00",
+      "cliffhanger_quote": "Extreme close-up on Mara's eyes as the lights go out. Cut to black.",
+      "cliffhanger_timestamp": "01:05.00",
+      "why_it_works": "It encapsulates the pilot's central conflict with natural escalation, progressing smoothly from a chilling discovery to hush money and physical peril.",
+      "standalone_score": 4,
+      "confidence": "high",
+      "hook_strength": 4,
+      "cliffhanger_strength": 5,
+      "spoiler_risk": "none",
+      "platform_risk": "none",
+      "risk_note": "",
+      "viewer_question": "Who was buried in Mr. Vale's coffin, and what will Julian do to Mara now that the lights are out?",
+      "twist_revealed": "none",
+      "rank_score": 4.15,
+      "rank": 1
+    },
+    {
+      "key": "E3#0",
+      "episode": "Episode 3",
+      "source_file": "episode-003-demo.json",
+      "segments": [
+        {
+          "start": "00:19.00",
+          "end": "01:03.00",
+          "start_s": 19.0,
+          "end_s": 63.0
+        }
+      ],
+      "total_length_s": 44.0,
+      "hook_quote": "She'd never lie.",
+      "hook_timestamp": "00:19.00",
+      "cliffhanger_quote": "Mara's face in the dark glass. Cut to black.",
+      "cliffhanger_timestamp": "01:00.00",
+      "why_it_works": "It flows seamlessly from high-stakes exposition and dealmaking into a chilling twist ending where the doors lock and the antagonist is driving the car.",
+      "standalone_score": 4,
+      "confidence": "high",
+      "hook_strength": 3,
+      "cliffhanger_strength": 5,
+      "spoiler_risk": "low",
+      "platform_risk": "none",
+      "risk_note": "",
+      "viewer_question": "Who is driving the car, and will Mara and Julian escape?",
+      "twist_revealed": "Julian reveals his uncle is alive, and the supposed dead man is driving their car.",
+      "rank_score": 3.85,
+      "rank": 2
+    },
+    {
+      "key": "E1#1",
+      "episode": "Episode 1",
+      "source_file": "episode-001-demo.json",
+      "segments": [
+        {
+          "start": "00:22.00",
+          "end": "01:08.00",
+          "start_s": 22.0,
+          "end_s": 68.0
+        }
+      ],
+      "total_length_s": 46.0,
+      "hook_quote": "You didn't see anything tonight. Did you, Mara?",
+      "hook_timestamp": "00:22.00",
+      "cliffhanger_quote": "Extreme close-up on Mara's eyes as the lights go out. Cut to black.",
+      "cliffhanger_timestamp": "01:05.00",
+      "why_it_works": "A tighter cut focusing entirely on the high-tension interrogation and extortion dynamic, culminating in a sudden cliffhanger blackout.",
+      "standalone_score": 4,
+      "confidence": "high",
+      "hook_strength": 3,
+      "cliffhanger_strength": 4,
+      "spoiler_risk": "none",
+      "platform_risk": "none",
+      "risk_note": "",
+      "viewer_question": "Who was buried in the father's coffin, and what is Julian about to do to Mara?",
+      "twist_revealed": "none",
+      "rank_score": 3.77,
+      "rank": 3
+    },
+    {
+      "key": "E2#0",
+      "episode": "Episode 2",
+      "source_file": "episode-002-demo.json",
+      "segments": [
+        {
+          "start": "00:10.00",
+          "end": "01:02.00",
+          "start_s": 10.0,
+          "end_s": 62.0
+        }
+      ],
+      "total_length_s": 52.0,
+      "hook_quote": "Please. A man died, or he didn't. I need to know which.",
+      "hook_timestamp": "00:10.00",
+      "cliffhanger_quote": "Mara turns as a black shadow fills the doorway. Freeze frame.",
+      "cliffhanger_timestamp": "00:59.00",
+      "why_it_works": "It builds escalating tension across 52 seconds, moving from an urgent inquiry into a shocking family secret, immediately followed by the arrival of the antagonist.",
+      "standalone_score": 4,
+      "confidence": "high",
+      "hook_strength": 3,
+      "cliffhanger_strength": 5,
+      "spoiler_risk": "low",
+      "platform_risk": "none",
+      "risk_note": "",
+      "viewer_question": "Who is Julian and what will he do to Mara now that she uncovered the truth?",
+      "twist_revealed": "Arthur Vale had a twin who may still be alive, and Mara's mother signed his death certificate.",
+      "rank_score": 3.64,
+      "rank": 4
+    },
+    {
+      "key": "E3#1",
+      "episode": "Episode 3",
+      "source_file": "episode-003-demo.json",
+      "segments": [
+        {
+          "start": "00:03.00",
+          "end": "01:03.00",
+          "start_s": 3.0,
+          "end_s": 63.0
+        }
+      ],
+      "total_length_s": 60.0,
+      "hook_quote": "Your mother was the finest doctor in this city.",
+      "hook_timestamp": "00:03.00",
+      "cliffhanger_quote": "Mara's face in the dark glass. Cut to black.",
+      "cliffhanger_timestamp": "01:00.00",
+      "why_it_works": "A full 60-second build that delivers complete context, emotional investment, high narrative tension, and a heart-stopping twist ending.",
+      "standalone_score": 4,
+      "confidence": "high",
+      "hook_strength": 3,
+      "cliffhanger_strength": 5,
+      "spoiler_risk": "low",
+      "platform_risk": "none",
+      "risk_note": "",
+      "viewer_question": "Is the driver Julian's supposedly dead uncle, and will Mara escape the car?",
+      "twist_revealed": "The dead man is revealed to still be alive.",
+      "rank_score": 3.4,
+      "rank": 5
+    }
+  ]
+}

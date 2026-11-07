@@ -1,0 +1,19 @@
+# Kuku's confidential input pack and anything quoting it
+/data/
+/outputs/
+/runs/
+
+# Demo: keep the results, skip the intermediate files
+/demo/data/
+
+# Local secrets
+.env
+
+# The solution doc quotes script lines; it goes on the form separately
+solution_doc.pdf
+solution_doc.html
+
+__pycache__/
+.pytest_cache/
+*.pyc
+*.log

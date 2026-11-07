@@ -1,0 +1,102 @@
+EPISODE NUMBER: Episode 1
+EPISODE LOGLINE: A hotel maid finds a dead man's ring in the penthouse suite, and the owner's son offers her a fortune to forget she saw it.
+CONTINUITY NOTES: First episode. Establishes Mara, the ring and Julian Vale.
+
+--- SCRIPT START ---
+
+SCENE 01
+Scene heading: INT. GRAND VALE HOTEL, PENTHOUSE - NIGHT
+Scene start: 00:00.00
+Scene end: 01:08.00
+
+Actions and dialogue:
+
+**CAMERA:**
+Start: (00:00.00) | End: (00:03.00)
+Slow push through a half-open penthouse door into a dark suite.
+
+**ACTION:**
+Start: (00:03.00) | End: (00:05.00)
+Mara, in a maid's uniform, freezes in the doorway holding fresh towels.
+
+**MARA (Whispering):**
+Start: (00:05.00) | End: (00:07.00)
+"Hello? Housekeeping."
+
+**ACTION:**
+Start: (00:07.00) | End: (00:11.00)
+She steps inside. A wedding ring glints on the carpet beside a smear of blood.
+
+**SOUND FX:**
+Start: (00:11.00) | End: (00:13.00)
+A low, tense string note rises.
+
+**MARA (Frightened):**
+Start: (00:13.00) | End: (00:17.00)
+"That's Mr. Vale's ring. He was buried with it."
+
+**JULIAN (O.S.) (Cold):**
+Start: (00:17.00) | End: (00:19.00)
+"Put it down."
+
+**CAMERA:**
+Start: (00:19.00) | End: (00:22.00)
+Mara spins. Julian Vale stands behind her in a black suit, closing the door.
+
+**JULIAN (Smooth):**
+Start: (00:22.00) | End: (00:26.00)
+"You didn't see anything tonight. Did you, Mara?"
+
+**MARA (Shaking):**
+Start: (00:26.00) | End: (00:29.00)
+"Your father's funeral was yesterday."
+
+**JULIAN (Amused):**
+Start: (00:29.00) | End: (00:32.00)
+"And yet here you are, holding his ring."
+
+**ACTION:**
+Start: (00:32.00) | End: (00:35.00)
+Julian lays a thick envelope on the table and slides it toward her.
+
+**JULIAN (Quiet):**
+Start: (00:35.00) | End: (00:40.00)
+"Fifty thousand dollars. Your sister's surgery, paid in full."
+
+**MARA (Stunned):**
+Start: (00:40.00) | End: (00:43.00)
+"How do you know about my sister?"
+
+**JULIAN (Deadly):**
+Start: (00:43.00) | End: (00:47.00)
+"I know everything that happens in my hotel."
+
+**MARA (Steady):**
+Start: (00:47.00) | End: (00:50.00)
+"And if I say no?"
+
+**JULIAN (Cold):**
+Start: (00:50.00) | End: (00:54.00)
+"Then you were the last person in this room."
+
+**ACTION:**
+Start: (00:54.00) | End: (00:57.00)
+Mara looks from the envelope to the ring in her trembling hand.
+
+**MARA (Whispering):**
+Start: (00:57.00) | End: (01:01.00)
+"Who was really in that coffin?"
+
+**JULIAN (Soft):**
+Start: (01:01.00) | End: (01:03.00)
+"Careful."
+
+**SOUND FX:**
+Start: (01:03.00) | End: (01:05.00)
+The door lock clicks shut.
+
+**CAMERA:**
+Start: (01:05.00) | End: (01:08.00)
+Extreme close-up on Mara's eyes as the lights go out. Cut to black.
+
+--- SCRIPT END ---

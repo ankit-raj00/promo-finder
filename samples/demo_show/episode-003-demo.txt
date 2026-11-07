@@ -1,0 +1,90 @@
+EPISODE NUMBER: Episode 3
+EPISODE LOGLINE: Julian offers Mara the truth about her mother, and she makes a dangerous deal to get inside the Vale family's locked archive.
+CONTINUITY NOTES: Picks up at the pawn shop. Mara learns her family is tied to the Vale secret.
+
+--- SCRIPT START ---
+
+SCENE 01
+Scene heading: INT. BLACK CAR - DAY
+Scene start: 00:00.00
+Scene end: 01:03.00
+
+Actions and dialogue:
+
+**CAMERA:**
+Start: (00:00.00) | End: (00:03.00)
+Inside a moving black car. Rain runs across dark glass.
+
+**JULIAN (Calm):**
+Start: (00:03.00) | End: (00:07.00)
+"Your mother was the finest doctor in this city."
+
+**MARA (Angry):**
+Start: (00:07.00) | End: (00:11.00)
+"My mother died cleaning your hotel floors."
+
+**JULIAN (Smooth):**
+Start: (00:11.00) | End: (00:15.00)
+"Because of what she wrote on one piece of paper."
+
+**ACTION:**
+Start: (00:15.00) | End: (00:19.00)
+He hands her a yellowed certificate. Her mother's signature sits at the bottom.
+
+**MARA (Whispering):**
+Start: (00:19.00) | End: (00:21.00)
+"She'd never lie."
+
+**JULIAN (Quiet):**
+Start: (00:21.00) | End: (00:26.00)
+"She didn't. Someone made her. And the proof is in my family's archive."
+
+**MARA (Suspicious):**
+Start: (00:26.00) | End: (00:28.00)
+"Why tell me?"
+
+**JULIAN (Cold):**
+Start: (00:28.00) | End: (00:33.00)
+"Because my uncle is alive, Mara. And he's coming for all of us."
+
+**SOUND FX:**
+Start: (00:33.00) | End: (00:35.00)
+Tires hiss to a stop.
+
+**JULIAN (Firm):**
+Start: (00:35.00) | End: (00:41.00)
+"Get me into that archive with your staff keys, and I'll clear your mother's name."
+
+**MARA (Steady):**
+Start: (00:41.00) | End: (00:43.00)
+"And my sister?"
+
+**JULIAN (Soft):**
+Start: (00:43.00) | End: (00:47.00)
+"Surgery on Friday. If you're still alive."
+
+**ACTION:**
+Start: (00:47.00) | End: (00:50.00)
+Mara closes her hand around the master key.
+
+**MARA (Resolved):**
+Start: (00:50.00) | End: (00:52.00)
+"Tonight, then."
+
+**CAMERA:**
+Start: (00:52.00) | End: (00:56.00)
+Rear view mirror: the driver's eyes lift to meet hers. They are the dead man's eyes.
+
+**MARA (Gasping):**
+Start: (00:56.00) | End: (00:58.00)
+"Stop the car."
+
+**SOUND FX:**
+Start: (00:58.00) | End: (01:00.00)
+The door locks thud shut.
+
+**CAMERA:**
+Start: (01:00.00) | End: (01:03.00)
+Mara's face in the dark glass. Cut to black.
+
+--- SCRIPT END ---

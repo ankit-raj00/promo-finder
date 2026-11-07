@@ -1,0 +1,12 @@
+{
+  "calls": 3,
+  "by_model": {
+    "agy/gemini-3.8-flash-low": {
+      "input": 6904,
+      "output": 3632,
+      "cache_read": 0,
+      "cache_write": 0
+    }
+  },
+  "est_total_usd": 0.0
+}

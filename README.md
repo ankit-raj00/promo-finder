@@ -1,0 +1,86 @@
+# Promo Finder
+
+Reads a microdrama screenplay and suggests the best 20-60 second promo clips, ranked. A good promo opens on a hook in the first 3 seconds, ends on a cliffhanger, and makes sense to someone who has never seen the show.
+
+Built for Problem 1 of Kuku's AI Generalist assignment.
+
+**Live app: https://13-206-20-22.sslip.io**
+
+The app opens on a sample show I wrote, so anyone can try it. Kuku's scripts are confidential and aren't in this repo. The results from its 50 episodes are behind a password in the app, and the password is on the submission form.
+
+## Try it
+
+1. Open the live app and look at **Post first**: the top 10 clips, each with a reason for its slot.
+2. Download the editor sheet. It's a CSV with every timestamp, hook and cliffhanger, plus empty columns for an editor's decision and notes.
+3. Open **Run on new episodes**, choose the sample show or upload your own `.txt` files, and press **Find promos**.
+
+With no API key, step 3 gives keyword-only picks and says so. For real judgment, enter these in the sidebar. They're used for your session only and are never saved.
+
+| To use | Base URL | Models |
+|---|---|---|
+| Anthropic | leave empty | a Claude model ID |
+| Google Gemini | `https://generativelanguage.googleapis.com/v1beta/openai/` | a Gemini model ID |
+| Anything OpenAI-compatible | your endpoint | that endpoint's model ID |
+
+## Run it on your computer
+
+Needs Python 3.10 or newer.
+
+```bash
+pip install -r requirements.txt
+python test_pipeline.py     # 11 offline tests, no key needed
+streamlit run app.py
+```
+
+To run a whole show from the command line:
+
+```bash
+cp .env.example .env        # then fill in your endpoint and key
+python run_show.py "<folder of .txt episodes>" runs/<show_name>
+```
+
+Results land in `runs/<show_name>/outputs/`, starting with `ranked_promos.md`. If an episode fails the others continue, a re-run picks up where it stopped, and rate limits are waited out.
+
+## How it works
+
+The rule behind the design: **AI makes the judgment calls, and code does anything that can be checked.**
+
+| Step | Who | File | What happens |
+|---|---|---|---|
+| 1. Read | Code | `parser.py` | Turns a script into scenes and timed lines, and copes with format quirks |
+| 2. Hints | Code | `heuristics.py` | Finds keyword matches. They're only hints, because keywords alone pick badly |
+| 3. Pick | AI | `llm_scorer.py` | The judge reads the episode and answers with line IDs |
+| 4. Check | Code | `validate.py` | Checks the length, hook and cliffhanger rules against the script |
+| 5. Second opinion | AI | `critic.py` | Scores the clip from its text alone, like a stranger would |
+| 6. Spoilers | AI | `spoiler_check.py` | Asks whether the clip gives away a twist |
+| 7. Score | Code | `rank.py` | Applies a formula anyone can read |
+| 8. Post first | AI | `global_rank.py` | Compares the top 15 side by side and gives a reason for each top 10 slot |
+| 9. Montages | AI + code | `cross_episode.py` | Joins moments across episodes, and code drops invalid ones |
+| 10. Decide | Person | `editor_sheet.py` | An editor approves the picks from the exported sheet and cuts the footage |
+
+Why some of these choices were made:
+
+- **Line IDs instead of text (step 3).** The model sees `e12 [00:17.00-00:19.00] JULIAN (O.S.) (Cold): Put it down.` and answers `e12`. Code then looks up the time and the words, so a quote or timestamp can't be invented. An early version let the model write quotes, and a full check found 12 of 138 merged or reworded.
+- **Retries with the error attached (step 4).** A pick that breaks a rule goes back to the model with the reason, up to twice, and is then dropped.
+- **A separate critic (step 5).** The judge rated nearly all its own hooks 4 or 5 out of 5, which is useless for ranking.
+- **The score (step 7).** It's 35% hook + 30% cliffhanger + 20% makes sense alone + 15% good length, minus a penalty for spoiler or platform risk.
+
+## How the models were chosen
+
+Each AI step has its own test, with the rules written down before the full comparison. See `EVAL_PLAN.md` for the rules and every change made along the way, and `MODEL_SELECTION.md` for the results and how to read them. The test scripts are `eval_models.py`, `eval_critic.py`, `eval_spoiler.py` and `eval_steps.py`.
+
+## Where it picks badly
+
+The tool reads text, so it can't judge acting, music or pacing. It can miss a great moment, choose clips that need backstory, return overlapping clips from one episode, and flag too many spoilers. A re-run also moves some start and end points. No editor has checked its picks yet, which is the biggest gap. `quality_report.py` measures these from any run.
+
+## Hosting
+
+The live app runs on one small AWS server, using `deploy/promo-finder.service` for the app and `deploy/Caddyfile` for HTTPS. The password comes from `PROMO_FINDER_VIEW_PASSWORD` in a root-only file on the server. No model API key is stored there.
+
+It also runs on [Streamlit Community Cloud](https://streamlit.io/cloud): point it at this repo with `app.py` as the main file. That shows the sample show only, because the real results aren't in the repo.
+
+## How the submitted results were produced
+
+Kuku's results came from running this pipeline on all 50 episodes, using the models in `.env.example`, except that the critic was `agy/claude-sonnet-4-6` (`MODEL_SELECTION.md` explains why that default changed). The models ran through OmniRoute on an Antigravity login. OmniRoute's own notes say Antigravity's terms prohibit proxy access, so a production version should use an official API key.
+
+In this repo, `demo/outputs/` holds the sample show's results.

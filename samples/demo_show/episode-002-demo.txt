@@ -1,0 +1,90 @@
+EPISODE NUMBER: Episode 2
+EPISODE LOGLINE: Mara hides the ring and takes it to the one man who can trace it, but he recognizes her name.
+CONTINUITY NOTES: Follows Mara's choice to keep the ring. Uses uppercase scene labels on purpose, as a format test.
+
+--- SCRIPT START ---
+
+SCENE 01
+SCENE HEADING: INT. PAWN SHOP - DAY
+SCENE START: 00:00.00
+SCENE END: 01:02.00
+
+Actions and dialogue:
+
+**CAMERA:**
+Start: (00:00.00) | End: (00:03.00)
+Rain streaks a pawn shop window. Mara slips inside, soaked.
+
+**ACTION:**
+Start: (00:03.00) | End: (00:05.00)
+She drops the ring on the glass counter.
+
+**MARA (Urgent):**
+Start: (00:05.00) | End: (00:08.00)
+"Tell me whose this is."
+
+**OTTO (Gruff):**
+Start: (00:08.00) | End: (00:10.00)
+"We're closed."
+
+**MARA (Firm):**
+Start: (00:10.00) | End: (00:15.00)
+"Please. A man died, or he didn't. I need to know which."
+
+**ACTION:**
+Start: (00:15.00) | End: (00:18.00)
+Otto lifts the ring to the light and goes pale.
+
+**OTTO (Shaken):**
+Start: (00:18.00) | End: (00:21.00)
+"Where did you get this?"
+
+**MARA (Guarded):**
+Start: (00:21.00) | End: (00:23.00)
+"The Vale penthouse."
+
+**OTTO (Low):**
+Start: (00:23.00) | End: (00:27.00)
+"This ring was made for two men, not one."
+
+**MARA (Confused):**
+Start: (00:27.00) | End: (00:29.00)
+"Two men?"
+
+**OTTO (Grim):**
+Start: (00:29.00) | End: (00:34.00)
+"Arthur Vale had a twin. The family says he died at nineteen."
+
+**MARA (Stunned):**
+Start: (00:34.00) | End: (00:38.00)
+"You're saying the wrong brother is buried?"
+
+**OTTO (Afraid):**
+Start: (00:38.00) | End: (00:42.00)
+"I'm saying you should run. What's your name, girl?"
+
+**MARA (Slowly):**
+Start: (00:42.00) | End: (00:44.00)
+"Mara Quinn."
+
+**ACTION:**
+Start: (00:44.00) | End: (00:48.00)
+Otto drops the ring. It rolls across the counter and stops at her fingers.
+
+**OTTO (Whispering):**
+Start: (00:48.00) | End: (00:53.00)
+"Quinn? Your mother signed the death certificate."
+
+**SOUND FX:**
+Start: (00:53.00) | End: (00:55.00)
+The shop bell rings behind her.
+
+**JULIAN (O.S.) (Calm):**
+Start: (00:55.00) | End: (00:59.00)
+"Thank you, Otto. I'll take it from here."
+
+**CAMERA:**
+Start: (00:59.00) | End: (01:02.00)
+Mara turns as a black shadow fills the doorway. Freeze frame.
+
+--- SCRIPT END ---

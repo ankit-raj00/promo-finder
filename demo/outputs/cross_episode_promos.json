@@ -1,0 +1,41 @@
+{
+  "montages": [
+    {
+      "title": "The Price of Silence",
+      "segments": [
+        {
+          "episode": "Episode 1",
+          "source_file": "episode-001-demo.json",
+          "start": "00:32.00",
+          "end": "00:54.00",
+          "start_s": 32.0,
+          "end_s": 54.0
+        },
+        {
+          "episode": "Episode 3",
+          "source_file": "episode-003-demo.json",
+          "start": "00:35.00",
+          "end": "01:03.00",
+          "start_s": 35.0,
+          "end_s": 63.0
+        }
+      ],
+      "hook": {
+        "episode": "Episode 1",
+        "quote": "Julian lays a thick envelope on the table and slides it toward her.",
+        "timestamp": "00:32.00",
+        "element": "e11"
+      },
+      "cliffhanger": {
+        "episode": "Episode 3",
+        "quote": "Mara's face in the dark glass. Cut to black.",
+        "timestamp": "01:00.00",
+        "element": "e18"
+      },
+      "total_length_s": 50.0,
+      "why_it_works": "Focuses on Julian's coercive manipulation and Mara's desperate motivation to save her sister. Jumping from the pilot's hush money offer to Episode 3's high-stakes archive heist deal turns Mara from a victim into a co-conspirator, right before the shocking vehicular trap snaps shut.",
+      "spoiler_risk": "high",
+      "note": "Runs 50 seconds in total. Sells the dramatic personal stakes and psychological tension before delivering a jarring horror-thriller cliffhanger."
+    }
+  ]
+}

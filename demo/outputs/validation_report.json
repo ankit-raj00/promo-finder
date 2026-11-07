@@ -1,0 +1,42 @@
+[
+  {
+    "episode": "Episode 1",
+    "source_file": "episode-001-demo.json",
+    "promo_index": 0,
+    "status": "ok",
+    "errors": [],
+    "warnings": []
+  },
+  {
+    "episode": "Episode 1",
+    "source_file": "episode-001-demo.json",
+    "promo_index": 1,
+    "status": "ok",
+    "errors": [],
+    "warnings": []
+  },
+  {
+    "episode": "Episode 2",
+    "source_file": "episode-002-demo.json",
+    "promo_index": 0,
+    "status": "ok",
+    "errors": [],
+    "warnings": []
+  },
+  {
+    "episode": "Episode 3",
+    "source_file": "episode-003-demo.json",
+    "promo_index": 0,
+    "status": "ok",
+    "errors": [],
+    "warnings": []
+  },
+  {
+    "episode": "Episode 3",
+    "source_file": "episode-003-demo.json",
+    "promo_index": 1,
+    "status": "ok",
+    "errors": [],
+    "warnings": []
+  }
+]

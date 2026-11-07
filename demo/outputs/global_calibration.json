@@ -1,0 +1,26 @@
+{
+  "scores": {},
+  "editor_order": [
+    {
+      "key": "E1#0",
+      "reason": "This clip features the strongest hook and introduces the central mystery directly without needing any prior context or spoiling future events."
+    },
+    {
+      "key": "E2#0",
+      "reason": "It continues building intrigue around the death mystery while varying the beat with an escalating inquiry and a dramatic doorway cliffhanger."
+    },
+    {
+      "key": "E3#0",
+      "reason": "This provides a fast-paced escalation into high-stakes dealmaking before delivering a chilling car-trap twist with minimal spoiler impact."
+    },
+    {
+      "key": "E1#1",
+      "reason": "Returning to Episode 1 offers a tight interrogation dynamic that reinforces the danger without placing similar pilot beats back-to-back."
+    },
+    {
+      "key": "E3#1",
+      "reason": "This longer cut works best as a deeper narrative hook once viewers are primed, maximizing emotional investment before the dark car reveal."
+    }
+  ],
+  "ordered_by": "agy/gemini-3.8-flash-low"
+}
